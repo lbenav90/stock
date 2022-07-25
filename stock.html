@@ -1,12 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Aplicación de stock</title>
+        <title>Aplicación de Stock</title>
         <script src="clases.js"></script>
         <script src="funciones.js"></script>
         <script src="stock.js"></script>
+        <link rel="stylesheet" href="styles.css"> 
     </head>
     <body>
-        Aquí va a poder llevar cuenta de su stock.
+        <div class="navigation-div">
+            <h2>Stock actual</h2>
+            <div class="navigation-buttons">
+                <button class="nav-el nav-but">Add item</button>
+                <button class="nav-el nav-but">Filters</button>
+                <form><input class="nav-el nav-search" type='text' placeholder="Search"></form>                
+            </div>
+        </div>
+        <div class="container-div">
+            <div class="stock-div"></div>
+            <div class="add-item-div"></div>
+            <div class="change-item-div"></div>
+        </div>
     </body>
 </html>

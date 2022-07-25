@@ -1,0 +1,21 @@
+.navigation-buttons {
+    display: flex;
+}
+
+.nav-el {
+    margin: 5px;
+    background-color: white;
+    border: 1px solid #3585fd;
+    border-radius: 3px;
+    padding: 3px 5px;
+    color: #3585fd;
+}
+
+.nav-but:hover {
+    color: white;
+    background-color: #3585fd;
+}
+
+.nav-search:focus-within {
+    border: 2px solid #3585fd;
+}
