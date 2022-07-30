@@ -1,3 +1,50 @@
+function runStockLoop() {
+    document.getElementById('stock-table-head').innerHTML = '';
+    document.getElementById('stock-table-body').innerHTML = '';
+
+    // Mensaje del menú principal del programa
+    const message = getInitialMessage();
+
+    let option = getNonNull(message, 'int');
+
+    // Repite el loop mientras el usuario no elija 0
+    while (option != 0) {
+        switch (option) {
+            case 1:
+                // Manipular el DOM para mostrar el stock actual
+                let status = stock.displayStock();
+                if (status == 0) {
+                    alert('No hay ítems en stock aún');
+                    break;
+                } else {
+                    return;
+                }
+            case 2:
+                // Agrege un nuevo ítem, sólo si se genera exitosamente
+                newItem = addNewItem(stock);
+                break;
+            case 3:
+                // Cambia la información de un ítem de stock
+                if (stock.length() != 0) {
+                    changeStock(stock);
+                } else {
+                    alert('No hay ítems en stock');
+                }
+                break;
+            case 4:
+                // Borra un ítem del stock
+                if (stock.length() != 0) {
+                    deleteItem(stock);
+                } else {
+                    alert('No hay ítems en stock');
+                }
+                break;
+        }
+
+        option = getNonNull(message, 'int');
+    }
+}
+
 /**
  * Devuelve las opciones del menú principal. Sirve apra ordenar el código y que no se vea desprolijo
  * @returns string para el alert del menú principal

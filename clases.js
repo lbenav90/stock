@@ -114,8 +114,12 @@ class Stock {
     }
     getItemNum() {
         let message = 'Ingrese el número de ítem a modificar (0 para salir):\n\n';
-        let currentStock = this.displayStock();
-        message += currentStock.split('Stock:\n\n')[1];
+        
+        let i = 1;
+        stock.items.forEach((item) => {
+            message += `${i}) ${item.nombre} - Marca: ${item.marca} - Cantidad: ${item.cantidad} - Presentación: ${item.presentacion}\n`
+            i++;
+        })
 
         let itemNum = getNonNull(message, 'int');
 
@@ -123,13 +127,43 @@ class Stock {
     }
     displayStock() {
         if (this.length() === 0) {
-            return 'No hay ítems en stock';
+            return 0;
         }
-        let stock = 'Stock:\n\n'
+        
+        let stockTableHead = document.getElementById('stock-table-head');
 
-        for (let i = 0; i < this.length(); i++) {
-            stock += `${i + 1}) ${this.items[i].output()}`;
+        stockTableHead.innerHTML = '';
+
+        let tableRow = document.createElement('tr');
+        let tableHeader;
+
+        for (const property in this.items[0]) {
+            tableHeader = document.createElement('th');
+            tableHeader.innerText = property.charAt(0).toUpperCase() + property.slice(1).toLowerCase();
+
+            tableRow.append(tableHeader);
         }
-        return stock;
+
+        stockTableHead.append(tableRow);
+
+        let stockTableBody = document.getElementById('stock-table-body');
+        stockTableBody.innerHTML = '';
+        
+        let tableData;
+
+        this.items.forEach((item) => {
+            tableRow = document.createElement('tr');
+            
+            for (const property in item) {
+                tableData = document.createElement('td');
+                tableData.innerText = item[property];
+
+                tableRow.append(tableData);
+            }
+
+            stockTableBody.append(tableRow);
+        })
+
+        return 1;
     }
 };
