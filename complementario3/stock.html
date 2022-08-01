@@ -12,18 +12,50 @@
         <div class="navigation-div">
             <h2>Stock actual</h2>
             <div class="navigation-buttons">
-                <button class="nav-el nav-but" onclick="runStockLoop()">Hacer cambios</button>           
+                <button id='add-item-but' class="nav-el nav-but">Agregar ítem</button>  
+                <button id='show-stock-but' class="nav-el nav-but">Ver stock</button>           
             </div>
         </div>
         <hr>
         <div id="container-div">
             <div id="stock-div">
+                <h4 id="empty-stock-alert">No hay ítems aún, agrega algunos!</h4>
                 <table id="stock-table" class="table table-hover">
                     <thead id="stock-table-head"></thead>
                     <tbody id="stock-table-body"></tbody>
                 </table>
             </div>
-            <div id="add-item-div"></div>
+            <div id="add-item-div">
+                <h3>Agregar un ítem</h3><br>
+                <form id="add-item-form" method="post">
+                    <table>
+                        <tr>
+                            <td class="add-item-data"><label for="item-nombre">Nombre:</label></td>
+                            <td class="add-item-data"><input type="text" id="item-nombre"></td>
+                            <td id="alert-nombre" class="alert-add-item-data"></td>
+                        </tr>
+                        <tr>
+                            <td class="add-item-data"><label for="item-marca">Marca:</label></td>
+                            <td class="add-item-data"><input type="text" id="item-marca"></td>
+                        </tr>
+                        <tr>
+                            <td class="add-item-data"><label for="item-cantidad">Cantidad:</label></td>
+                            <td class="add-item-data"><input type="number" id="item-cantidad"></td>
+                            <td id="alert-cantidad" class="alert-add-item-data"></td>
+                        </tr>
+                        <tr>
+                            <td class="add-item-data"><label for="item-presentacion">Presentación:</label></td>
+                            <td class="add-item-data"><input type="text" id="item-presentacion"></td>
+                            <td id="alert-presentacion" class="alert-add-item-data"></td>
+                        </tr>
+                        <tr>
+                            <td id='alerting-element' class="add-item-data"></td>
+                            <td id='add-item-submit' class="add-item-data"><input id='add-item-submit-input' type='submit' value='Agregar'></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div id="show-item-div"></div>
             <div id="change-item-div"></div>
         </div>
     </body>

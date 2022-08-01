@@ -1,8 +1,12 @@
+body {
+    padding: 20px;
+}
+
 .navigation-buttons {
     display: flex;
 }
 
-.nav-el {
+.nav-but {
     margin: 5px;
     background-color: white;
     border: 1px solid #3585fd;
@@ -16,6 +20,53 @@
     background-color: #3585fd;
 }
 
-.nav-search:focus-within {
-    border: 2px solid #3585fd;
+#add-item-div {
+    display: none;
+}
+
+#show-stock-div {
+    display: block;
+}
+
+#show-item-div {
+    display: none;
+}
+
+#add-item-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.add-item-data {
+    column-width: 200px;
+    padding: 5px 0px;
+}
+
+#add-item-submit {
+    display: flex;
+    justify-content: right;
+}
+
+#add-item-submit-input {
+    margin: 5px;
+    background-color: white;
+    border: 1px solid #3585fd;
+    border-radius: 3px;
+    padding: 3px 5px;
+    color: #3585fd;
+}
+
+#add-item-submit-input:hover {
+    color: white;
+    background-color: #3585fd;
+}
+
+#alerting-element {
+    color: red;
+    font-size: 10pt;
+}
+
+.alert-add-item-data {
+    color: red;
 }

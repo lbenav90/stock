@@ -1,3 +1,5 @@
+function handleForm(event) { event.preventDefault(); }
+
 function runStockLoop() {
     document.getElementById('stock-table-head').innerHTML = '';
     document.getElementById('stock-table-body').innerHTML = '';

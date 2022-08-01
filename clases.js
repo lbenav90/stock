@@ -1,93 +1,101 @@
 class Item {
-    // Objeto que contiene la infomración de un ítem del stock
-    constructor(nombre = '', marca = '', cantidad = 0, presentacion = '') {
-        // En este programa, en general se crea el objeto vacío y se puebla después.
+    // Objeto que contiene la información de un ítem del stock
+    constructor(id, nombre, marca, cantidad, presentacion) {
+        this.id = id;
         this.nombre = nombre;
         this.marca = marca;
         this.cantidad = cantidad;
         this.presentacion = presentacion;
     }
-    output() {
-        // String para la creación del alert de stock
-        return `${this.nombre} - Marca: ${this.marca} - Cantidad: ${this.cantidad} - Presentación: ${this.presentacion}\n`
-    }
-    addParameters() {
-        // Método que permite poblar los campos de la clase con información del usuario
-        let nombre = getNonNull('Nombre del ítem (ESC para salir):', 'str');
+    displayItem() {
+        let itemName = document.createElement('h3');
+        itemName.innerText = this.nombre;
 
-        if (nombre.toLowerCase() === 'esc'){
-            // Escapa la función sin sumarle nada al stock
-            return false;
-        }
-
-        let marca = getNonNull(`Marca de ${nombre.toLowerCase()} (ESC para salir):`, 'str');
-        
-        if (marca.toLowerCase() === 'esc'){
-            // Escapa la función sin sumarle nada al stock
-            return false;
-        }
-
-        let presentacion = getNonNull(`Presentación de ${nombre.toLowerCase()} (unidad, caja, kilo/s, etc.) (ESC para salir)`, 'str');
-        
-        if (presentacion.toLowerCase() === 'esc'){
-            // Escapa la función sin sumarle nada al stock
-            return false;
-        }
-
-        let cantidad = getNonNull(`Cantidad en stock de ${nombre.toLowerCase()} (0 para salir)`, 'int');
-
-        if (cantidad === 0){
-            // Escapa la función sin sumarle nada al stock
-            return false;
-        }
-
-        this.nombre = nombre;
-        this.marca = marca;
-        this.presentacion = presentacion;
-        this.cantidad = cantidad;
-        return true;
-    }
-    getPropertyToChange() {
-        // Pide al usuario un número que corresponde a una propiedad que desea modificar. También da la opción de modificar todo
-
-        // Genera un mensaje con todas las propiedades de Item y les asigna un número
-        let message = 'Ingrese el número del dato a modificar (0 para salir):\n\n';
-        // Objeto auxiliar que vincula la propiedad con el número asignado
-        let properties = {}
-        
-        let prNum = 1;
-        for (const property in this){
-            // Sumo la propiedad al mensaje
-            message += `${prNum}) ${property.charAt(0).toUpperCase() + property.slice(1).toLowerCase()}: ${this[property]}\n`;
-
-            // Le asigno la propiedad al número prNum en el objeto auxiliar
-            properties[prNum] = property;
-            prNum++;
-        }
-        
-        // Agrego la opción de cambiar todos los campos
-        message += `${prNum}) Cambiar todos los campos\n`
-        properties[prNum] = 'all';
-
-        // Pido al usuario un número asignado a una propiedad
-        let propertyNum = getNonNull(message, 'int');
-
-        if (propertyNum === 0) {
-            return false;
-        }
-
-        // Selecciono la propiedad del objeto auxiliar
-        const selectedProperty = properties[propertyNum];
-
-        // Si la selección es válida, devoler el nombre de la propiedad. Si no, avisar y retornar false
-        if (selectedProperty) {
-            return properties[propertyNum];
+        let itemBrand = document.createElement('p');
+        if (this.marca === '') {
+            itemBrand.innerText = 'Marca: None';
         } else {
-            alert('La propiedad seleccionada es inválida, no se aplicaron cambios');
-            return false;
+            itemBrand.innerText = `Marca: ${this.marca}`;
         }
+        
+        let itemQuantity = document.createElement('p');
+        itemQuantity.innerText = `Cantidad: ${this.cantidad}`;
+        
+        let itemPresentation = document.createElement('p');
+        itemPresentation.innerText = `Presentación: ${this.presentacion}`;
+
+        let editButton = document.createElement('button');
+        editButton.className = 'nav-but';
+        editButton.innerText = 'Editar';
+        this.addEditButtonEventListener(editButton);
+
+        let showItemDiv = document.querySelector('#show-item-div');
+        showItemDiv.innerHTML = '';
+        showItemDiv.append(itemName, itemBrand, itemQuantity, itemPresentation, editButton);
     }
-};
+    addEditButtonEventListener(editButton) {
+        editButton.addEventListener('click', () => {
+            let clonedForm = document.querySelector('#add-item-form').cloneNode(true);
+
+            clonedForm.querySelector('#add-item-submit-input').value = 'Guardar';
+
+            clonedForm.querySelectorAll('.alert-add-item-data').forEach((td) => {
+                td.className = 'alert-change-item-data';
+                let aux = td.id.split('-')
+                aux[2] = 'change'
+                td.id = aux.join('-');
+            })
+            clonedForm.querySelector('#alerting-element-add').id = 'alerting-element-change'
+
+            clonedForm.querySelector('#item-nombre').value = this.nombre;
+            clonedForm.querySelector('#item-marca').value = this.marca;
+            clonedForm.querySelector('#item-cantidad').value = this.cantidad;
+            clonedForm.querySelector('#item-presentacion').value = this.presentacion;
+
+            clonedForm.addEventListener('submit', handleForm);
+
+            clonedForm.addEventListener('submit', () => {
+
+                document.querySelector('#alerting-element-change').innerText = '';
+                document.querySelectorAll('.alert-change-item-data').forEach((el) => {
+                    el.innerText = '';
+                })
+
+                let nombre = clonedForm.querySelector('#item-nombre').value;
+                let marca = clonedForm.querySelector('#item-marca').value;
+                let cantidad = parseInt(clonedForm.querySelector('#item-cantidad').value);
+                let presentacion = clonedForm.querySelector('#item-presentacion').value;
+
+                if (!checkValidInputs(nombre, cantidad, presentacion, 'change')) return;
+
+                this.changeParameters(nombre, marca, cantidad, presentacion);
+                
+                document.querySelector('#change-item-div').innerHTML = '';
+
+                document.querySelector('#show-item-div').style.display = 'block';
+                document.querySelector('#change-item-div').style.display = 'none';
+
+                this.displayItem();
+            })
+
+            document.querySelector('#show-item-div').style.display = 'none';
+            document.querySelector('#change-item-div').style.display = 'block';
+
+            let title = document.createElement('h3')
+            title.innerText = 'Modificar un ítem';
+            let separador = document.createElement('br');
+
+            document.querySelector('#change-item-div').append(title, separador, clonedForm);
+
+        })
+    }
+    changeParameters(nombre, marca, cantidad, presentacion) {
+        this.nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1).toLowerCase();
+        this.marca = marca.charAt(0).toUpperCase() + marca.slice(1).toLowerCase();
+        this.cantidad = cantidad;
+        this.presentacion = presentacion.charAt(0).toUpperCase() + presentacion.slice(1).toLowerCase();
+    }
+}
 
 class Stock {
     // Objeto que contiene los Items del stock. Contiene objetos de la clase Item
@@ -112,24 +120,13 @@ class Stock {
     deleteItem(index) {
         this.items.splice(index, 1);
     }
-    getItemNum() {
-        let message = 'Ingrese el número de ítem a modificar (0 para salir):\n\n';
-        
-        let i = 1;
-        stock.items.forEach((item) => {
-            message += `${i}) ${item.nombre} - Marca: ${item.marca} - Cantidad: ${item.cantidad} - Presentación: ${item.presentacion}\n`
-            i++;
-        })
-
-        let itemNum = getNonNull(message, 'int');
-
-        return itemNum;
-    }
     displayStock() {
         if (this.length() === 0) {
             return 0;
+        } else {
+            document.querySelector('#empty-stock-alert').style.display = 'none';
         }
-        
+
         let stockTableHead = document.getElementById('stock-table-head');
 
         stockTableHead.innerHTML = '';
@@ -153,17 +150,31 @@ class Stock {
 
         this.items.forEach((item) => {
             tableRow = document.createElement('tr');
-            
+
             for (const property in item) {
                 tableData = document.createElement('td');
-                tableData.innerText = item[property];
+                if (item[property] == '') {
+                    tableData.innerText = 'None';
+                } else {
+                    tableData.innerText = item[property];
+                }
 
                 tableRow.append(tableData);
             }
 
+            tableRow.addEventListener('click', () => {
+                document.querySelector('#stock-div').style.display = 'none';
+                document.querySelector('#add-item-div').style.display = 'none';
+                document.querySelector('#show-item-div').style.display = 'block';
+                document.querySelector('#change-item-div').style.display = 'none';
+
+                item.displayItem();
+            
+            })
             stockTableBody.append(tableRow);
         })
 
         return 1;
+        
     }
 };
