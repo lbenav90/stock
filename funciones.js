@@ -1,8 +1,21 @@
+/**
+ * Esta función evita que los formularios recarguen la página cuando se postean
+ * @param {*} event 
+ */
 function handleForm(event) { event.preventDefault(); }
 
+/**
+ * Chequea que los inputs en los formularios sean válidos y si no lo son, agrega alertas en el formulario
+ * @param {str} nombre 
+ * @param {int} cantidad 
+ * @param {str} presentacion 
+ * @param {str} type 'add' o 'change', los dos tipos de formularios
+ * @returns bool, indica si los inputs son válidos
+ */
 function checkValidInputs(nombre, cantidad, presentacion, type) {
     if ((isNaN(cantidad) || cantidad <= 0) || nombre === '' || presentacion === '') {
-        // Chequea que ingresen nombre, presentación y una cantidad válida
+        // Chequea que ingresen nombre, presentación y una cantidad válida. 
+        // Si alguno es inválido, chequea todos para poner las alertas correspondientes.
         if (nombre === '') {
             document.querySelector(`#alerting-element-${type}`).innerText += 'Ingresar un nombre\n';
             document.querySelector(`#alert-nombre-${type}`).innerText += '*';
@@ -18,6 +31,99 @@ function checkValidInputs(nombre, cantidad, presentacion, type) {
         return false;
     }
     return true;
+}
+
+/**
+ * Genera la estructura de los formularios automáticamente.
+ * @param {str} type 'add' o 'change' los dos tipos de formularios
+ * @returns form element para ser agregado al DOM
+ */
+function generateForm(type) {
+    let newForm = document.createElement('form')
+    newForm.method = 'post';
+    newForm.id = `${type}-item-form`;
+
+    let formTable = document.createElement('table');
+    
+    let formRows = ['Nombre', 'Marca', 'Cantidad', 'Presentacion', ''];
+
+    let tRow, tData, label, input;
+
+    for (const row of formRows) {
+        if (row === '') {
+            tRow = document.createElement('tr');
+
+            tData = document.createElement('td');
+            tData.className = `${type}-item-data`;
+            tData.id = `alerting-element-${type}`;
+
+            tRow.append(tData);
+
+            tData = document.createElement('td');
+            tData.className = `${type}-item-data`;
+            tData.id = `${type}-item-submit`;
+
+            input = document.createElement('input');
+            input.id = `${type}-item-submit-input`;
+            input.type = 'submit';
+            
+            switch (type) {
+                case 'add':
+                    input.value = 'Agregar';
+                    break;
+                case 'change':
+                    input.value = 'Guardar';
+                    break;
+            }
+
+            tData.append(input);
+            tRow.append(tData);
+        } else {
+            tRow = document.createElement('tr');
+
+            tData = document.createElement('td');
+            tData.className = `${type}-item-data`;
+
+            label = document.createElement('label');
+            label.for = `item-${row.toLowerCase()}`;
+
+            if (row == 'Presentacion') {
+                label.innerText = `Presentación:`
+            } else {
+                label.innerText = `${row}:`;
+            }
+
+            tData.append(label);
+            tRow.append(tData);
+
+            tData = document.createElement('td');
+            tData.className = `${type}-item-data`;
+
+            input = document.createElement('input');
+
+            if (row === 'Cantidad') {
+                input.type = 'number';
+            } else {
+                input.type = 'text';
+            }
+
+            input.id = `item-${row.toLowerCase()}`;
+
+            tData.append(input);
+            tRow.append(tData);
+
+            if (row != 'Marca') {
+                tData = document.createElement('td');
+                tData.className = `alert-${type}-item-data`;
+                tData.id = `alert-${row.toLowerCase()}-${type}`;
+
+                tRow.append(tData);
+            }
+        }
+        formTable.append(tRow);
+    }
+    newForm.append(formTable);
+    return newForm;
 }
 
 function runStockLoop() {

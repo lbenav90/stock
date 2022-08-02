@@ -35,36 +35,26 @@ class Item {
     }
     addEditButtonEventListener(editButton) {
         editButton.addEventListener('click', () => {
-            let clonedForm = document.querySelector('#add-item-form').cloneNode(true);
+            let newForm = generateForm('change');
 
-            clonedForm.querySelector('#add-item-submit-input').value = 'Guardar';
+            newForm.querySelector('#item-nombre').value = this.nombre;
+            newForm.querySelector('#item-marca').value = this.marca;
+            newForm.querySelector('#item-cantidad').value = this.cantidad;
+            newForm.querySelector('#item-presentacion').value = this.presentacion;
 
-            clonedForm.querySelectorAll('.alert-add-item-data').forEach((td) => {
-                td.className = 'alert-change-item-data';
-                let aux = td.id.split('-')
-                aux[2] = 'change'
-                td.id = aux.join('-');
-            })
-            clonedForm.querySelector('#alerting-element-add').id = 'alerting-element-change'
+            newForm.addEventListener('submit', handleForm);
 
-            clonedForm.querySelector('#item-nombre').value = this.nombre;
-            clonedForm.querySelector('#item-marca').value = this.marca;
-            clonedForm.querySelector('#item-cantidad').value = this.cantidad;
-            clonedForm.querySelector('#item-presentacion').value = this.presentacion;
-
-            clonedForm.addEventListener('submit', handleForm);
-
-            clonedForm.addEventListener('submit', () => {
+            newForm.addEventListener('submit', () => {
 
                 document.querySelector('#alerting-element-change').innerText = '';
                 document.querySelectorAll('.alert-change-item-data').forEach((el) => {
                     el.innerText = '';
                 })
 
-                let nombre = clonedForm.querySelector('#item-nombre').value;
-                let marca = clonedForm.querySelector('#item-marca').value;
-                let cantidad = parseInt(clonedForm.querySelector('#item-cantidad').value);
-                let presentacion = clonedForm.querySelector('#item-presentacion').value;
+                let nombre = newForm.querySelector('#item-nombre').value;
+                let marca = newForm.querySelector('#item-marca').value;
+                let cantidad = parseInt(newForm.querySelector('#item-cantidad').value);
+                let presentacion = newForm.querySelector('#item-presentacion').value;
 
                 if (!checkValidInputs(nombre, cantidad, presentacion, 'change')) return;
 
@@ -85,7 +75,7 @@ class Item {
             title.innerText = 'Modificar un ítem';
             let separador = document.createElement('br');
 
-            document.querySelector('#change-item-div').append(title, separador, clonedForm);
+            document.querySelector('#change-item-div').append(title, separador, newForm);
 
         })
     }

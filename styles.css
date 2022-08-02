@@ -38,17 +38,17 @@ body {
     gap: 10px;
 }
 
-.add-item-data {
+.add-item-data, .change-item-data {
     column-width: 200px;
     padding: 5px 0px;
 }
 
-#add-item-submit {
+#add-item-submit, #change-item-submit {
     display: flex;
     justify-content: right;
 }
 
-#add-item-submit-input {
+#add-item-submit-input, #change-item-submit-input{
     margin: 5px;
     background-color: white;
     border: 1px solid #3585fd;
@@ -57,25 +57,16 @@ body {
     color: #3585fd;
 }
 
-#add-item-submit-input:hover {
+#add-item-submit-input:hover , #change-item-submit-input:hover {
     color: white;
     background-color: #3585fd;
 }
 
-#alerting-element-add {
+#alerting-element-add, #alerting-element-change {
     color: red;
     font-size: 10pt;
 }
 
-#alerting-element-change {
-    color: red;
-    font-size: 10pt;
-}
-
-.alert-add-item-data {
-    color: red;
-}
-
-.alert-change-item-data {
+.alert-add-item-data, .alert-change-item-data {
     color: red;
 }
