@@ -36,7 +36,7 @@ function checkValidInputs(nombre, cantidad, presentacion, type) {
 /**
  * Genera la estructura de los formularios automáticamente.
  * @param {str} type 'add' o 'change' los dos tipos de formularios
- * @returns form element para ser agregado al DOM
+ * @returns form element para ser agregado al DOM   
  */
 function generateForm(type) {
     let newForm = document.createElement('form')

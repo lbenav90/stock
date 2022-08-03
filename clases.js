@@ -35,12 +35,12 @@ class Item {
     }
     addEditButtonEventListener(editButton) {
         editButton.addEventListener('click', () => {
-            let newForm = generateForm('change');
-
-            newForm.querySelector('#item-nombre').value = this.nombre;
-            newForm.querySelector('#item-marca').value = this.marca;
-            newForm.querySelector('#item-cantidad').value = this.cantidad;
-            newForm.querySelector('#item-presentacion').value = this.presentacion;
+            let newForm = document.createElement('form-element');
+            newForm.type = 'change';
+            newForm.nombre = this.nombre;
+            newForm.marca = this.marca;
+            newForm.cantidad = this.cantidad;
+            newForm.presentacion = this.presentacion;
 
             newForm.addEventListener('submit', handleForm);
 
@@ -71,11 +71,7 @@ class Item {
             document.querySelector('#show-item-div').style.display = 'none';
             document.querySelector('#change-item-div').style.display = 'block';
 
-            let title = document.createElement('h3')
-            title.innerText = 'Modificar un ítem';
-            let separador = document.createElement('br');
-
-            document.querySelector('#change-item-div').append(title, separador, newForm);
+            document.querySelector('#change-item-div').append(newForm);
 
         })
     }
@@ -111,15 +107,18 @@ class Stock {
         this.items.splice(index, 1);
     }
     displayStock() {
+        let stockTableHead = document.getElementById('stock-table-head');
+        stockTableHead.innerHTML = '';
+
+        let stockTableBody = document.getElementById('stock-table-body');
+        stockTableBody.innerHTML = '';
+
         if (this.length() === 0) {
+            document.querySelector('#empty-stock-alert').style.display = 'block';
             return 0;
         } else {
             document.querySelector('#empty-stock-alert').style.display = 'none';
         }
-
-        let stockTableHead = document.getElementById('stock-table-head');
-
-        stockTableHead.innerHTML = '';
 
         let tableRow = document.createElement('tr');
         let tableHeader;
@@ -131,12 +130,14 @@ class Stock {
             tableRow.append(tableHeader);
         }
 
-        stockTableHead.append(tableRow);
+        tableHeader = document.createElement('th');
+        tableRow.append(tableHeader);
 
-        let stockTableBody = document.getElementById('stock-table-body');
-        stockTableBody.innerHTML = '';
+
+        stockTableHead.append(tableRow);
         
-        let tableData;
+        let tableData, deleteButton;
+        let itemIndex = 0;
 
         this.items.forEach((item) => {
             tableRow = document.createElement('tr');
@@ -152,6 +153,21 @@ class Stock {
                 tableRow.append(tableData);
             }
 
+            tableData = document.createElement('td');
+            deleteButton = document.createElement('button');
+            deleteButton.className = 'del-but';
+            deleteButton.innerText = 'Borrar';
+
+            deleteButton.addEventListener('click', (event) => {
+                this.deleteItem(this.items.indexOf(item));
+                this.displayStock();
+                event.stopPropagation();
+            })
+
+            tableData.append(deleteButton);
+
+            tableRow.append(tableData);
+
             tableRow.addEventListener('click', () => {
                 document.querySelector('#stock-div').style.display = 'none';
                 document.querySelector('#add-item-div').style.display = 'none';
@@ -162,6 +178,7 @@ class Stock {
             
             })
             stockTableBody.append(tableRow);
+            itemIndex++;
         })
 
         return 1;

@@ -16,12 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#change-item-div').innerHTML = '';
         document.querySelector('#add-item-div').innerHTML = '';
 
-        let title = document.createElement('h3');
-        title.innerText = 'Agregar un ítem';
-
-        let separador = document.createElement('br');
-
-        let newForm = generateForm('add');
+        let newForm = document.createElement('form-element');
 
         newForm.addEventListener('submit', handleForm);
         
@@ -51,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stock.displayStock();
         });
         
-        document.querySelector('#add-item-div').append(title, separador, newForm);
+        document.querySelector('#add-item-div').append(newForm);
         
         // Vacío los inputs
         document.querySelector('#item-nombre').value = '';
