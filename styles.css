@@ -20,18 +20,22 @@ body {
     background-color: #3585fd;
 }
 
-.del-but {
+.nav-but:focus-visible {
+    outline: 1px solid #3585fd;
+}
+
+.stock-table-but {
     color: #aaaaaa;
     border: 1px solid #dddddd;
     font-size: 9px;
-    height: 20px;
+    height: 35px;
+    width: 35px;
 }
 
-.del-but:hover {
+.stock-table-but:hover {
     color: white;
     background-color: #aaaaaa;
 }
-
 
 #add-item-div {
     display: none;
@@ -82,4 +86,49 @@ body {
 
 .alert-add-item-data, .alert-change-item-data {
     color: red;
+}
+
+.quantity-div {
+    display: flex;
+    flex-direction: row;
+    height: 30px;
+    width: 80px;
+    align-items: center;
+}
+
+.quantity-but-div {
+    display: flex;
+    flex-direction: column;
+}
+
+.quantity-but {
+    display: flex;
+    height: 20px; 
+    width: 25px;
+    border: 1px solid #dddddd;
+    align-items: center;
+    justify-content: center;
+    font-size: 9pt;
+    font-weight: bold;
+    padding: 0px;
+    color: #888888;
+}
+
+.quantity-but:hover {
+    background-color: #dddddd;
+    color: #eeeeee;
+}
+
+.quantity-span {
+    padding: 5px;
+    width: 50px;
+}
+
+.quantity-plus {
+    font-size: 11pt;
+    border-radius: 5px 5px 0px 0px;
+}
+
+.quantity-minus {
+    border-radius: 0px 0px 5px 5px;
 }

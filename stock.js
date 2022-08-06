@@ -1,7 +1,9 @@
 // Creo un stock. Por ahora así, en el futuro puedo crear varios stocks
-const stock = new Stock();
+
 
 document.addEventListener('DOMContentLoaded', () => {
+    
+    let stock = new Stock();
 
     stock.displayStock();
 
@@ -18,10 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Creo un formulario en modo 'add'
         let newForm = document.createElement('form-element');
-
-        newForm.addEventListener('submit', handleForm);
         
-        newForm.addEventListener('submit', () => {
+        newForm.addEventListener('submit', (event) => {
+            event.preventDefault()
+
             // Borro contenidos de los elementos de alerta
             document.querySelector('#alerting-element-add').innerText = '';
             document.querySelectorAll('.alert-add-item-data').forEach((el) => {

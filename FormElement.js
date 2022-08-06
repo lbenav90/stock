@@ -102,7 +102,7 @@ class FormElement extends HTMLElement {
     }
 
     // Funciones SET y GET para todos los atributos.
-    get type(){ return this.hasAttribute('type'); }
+    get type() { return this.hasAttribute('type'); }
     set type(val) { if (val) { this.setAttribute('type', val); } else { this.removeAttribute('type'); } }
 
     get nombre() { return this.hasAttribute('nombre'); }
@@ -110,10 +110,10 @@ class FormElement extends HTMLElement {
     get cantidad() { return this.hasAttribute('cantidad'); }
     get presentacion() { return this.hasAttribute('presentacion'); }
     
-    set nombre(val){ if (val) { this.setAttribute('nombre', val); } else { this.removeAttribute('nombre'); } }
-    set marca(val){ if (val) { this.setAttribute('marca', val); } else { this.removeAttribute('marca'); } }
-    set cantidad(val){ if (val) { this.setAttribute('cantidad', val); } else { this.removeAttribute('cantidad'); } }
-    set presentacion(val){ if (val) { this.setAttribute('presentacion', val); } else { this.removeAttribute('presentacion'); } }
+    set nombre(val) { val? this.setAttribute('nombre', val) : this.removeAttribute('nombre'); } 
+    set marca(val) { val? this.setAttribute('marca', val) : this.removeAttribute('marca'); } 
+    set cantidad(val) { val? this.setAttribute('cantidad', val) : this.removeAttribute('cantidad'); } 
+    set presentacion(val) { val? this.setAttribute('presentacion', val) : this.removeAttribute('presentacion'); } 
 
     attributeChangedCallback(name, oldValue, newValue) {
         // Vuelve a renderear el objeto
