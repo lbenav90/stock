@@ -1,5 +1,9 @@
-// Creo un stock. Por ahora así, en el futuro puedo crear varios stocks
+import Stock from './clases/Stock.js';
+import Item from './clases/Item.js';
+import FormElement from './customElements/FormElement.js'
+import { checkValidInputs } from "./funciones.js";
 
+!customElements.get('form-element')? customElements.define('form-element', FormElement): 1;
 
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -36,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let presentacion = document.querySelector('#item-presentacion').value;
             
             // Si hay un input inválido, usa los elementos de alerta y finaliza la ejecución
-            if (!checkValidInputs(nombre, cantidad, presentacion, 'add')) return;
+            if (!checkValidInputs(nombre, marca, cantidad, presentacion, 'add')) return;
             
             // Defino un nuevo Item
             let newItem = new Item(stock.length() + 1,

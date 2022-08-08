@@ -24,6 +24,10 @@ body {
     outline: 1px solid #3585fd;
 }
 
+.stock-item-row {
+    vertical-align: middle;
+}
+
 .stock-table-but {
     color: #aaaaaa;
     border: 1px solid #dddddd;
@@ -35,7 +39,7 @@ body {
 .stock-table-but:hover {
     color: white;
     background-color: #aaaaaa;
-}
+}  
 
 #add-item-div {
     display: none;

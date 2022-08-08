@@ -1,4 +1,6 @@
-class QuantityDiv extends HTMLElement {
+import Stock from '../clases/Stock.js'
+
+export default class QuantityDiv extends HTMLElement {
     constructor() {
         super();
     }
@@ -66,5 +68,3 @@ class QuantityDiv extends HTMLElement {
     set itemId(val) { val? this.setAttribute('itemId', val) : this.removeAttribute('itemId'); }
 
 }
-
-customElements.define('quantity-div', QuantityDiv);

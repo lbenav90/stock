@@ -1,3 +1,6 @@
+import Stock from './clases/Stock.js';
+import Item from './clases/Item.js';
+
 /**
  * Chequea que los inputs en los formularios sean válidos y si no lo son, agrega alertas en el formulario
  * @param {str} nombre 
@@ -6,7 +9,7 @@
  * @param {str} type 'add' o 'change', los dos tipos de formularios
  * @returns bool, indica si los inputs son válidos
  */
-function checkValidInputs(nombre, cantidad, presentacion, type) {
+export function checkValidInputs(nombre, marca, cantidad, presentacion, type) {
     if ((isNaN(cantidad) || cantidad <= 0) || nombre === '' || presentacion === '') {
         // Chequea que ingresen nombre, presentación y una cantidad válida. 
         // Si alguno es inválido, chequea todos para poner las alertas correspondientes.
@@ -24,5 +27,20 @@ function checkValidInputs(nombre, cantidad, presentacion, type) {
         }
         return false;
     }
-    return true;
+
+    let stock = new Stock ();
+    stock.getStockFromStorage();
+    
+    let uniqueItem = true;
+    
+    stock.items.forEach((item) => {
+        if (nombre.toLowerCase().trim() === item.nombre.toLowerCase() && 
+            marca.toLowerCase().trim() === item.marca.toLowerCase() && 
+            presentacion.toLowerCase().trim() === item.presentacion.toLowerCase()) {   
+
+            document.querySelector(`#alerting-element-${type}`).innerText += 'Ítem ya existente\n';
+            uniqueItem = false;
+        }
+    })
+    return uniqueItem;
 }

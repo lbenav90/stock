@@ -1,102 +1,9 @@
-class Item {
-    // Objeto que contiene la información de un ítem del stock
-    constructor(id, nombre, marca, cantidad, presentacion) {
-        this.id = id;
-        this.nombre = nombre;
-        this.marca = marca;
-        this.cantidad = cantidad;
-        this.presentacion = presentacion;
-    }
-    increaseStock(){
-        this.cantidad++;
-    }
-    decreaseStock(){
-        this.cantidad--;
-    }
-    displayItem() {
-        // Método que crea el HTML conteniendo la información del ítem.
-        // Refactorizar en un custom element?
-        let itemName = document.createElement('h3');
-        itemName.innerText = this.nombre;
+import QuantityDiv from '../customElements/QuantityDiv.js';
+import Item from './Item.js'
 
-        let itemBrand = document.createElement('p');
-        if (this.marca === '') {
-            itemBrand.innerText = 'Marca: None';
-        } else {
-            itemBrand.innerText = `Marca: ${this.marca}`;
-        }
-        
-        let itemQuantity = document.createElement('p');
-        itemQuantity.innerText = `Cantidad: ${this.cantidad}`;
-        
-        let itemPresentation = document.createElement('p');
-        itemPresentation.innerText = `Presentación: ${this.presentacion}`;
+!customElements.get('quantity-div')? customElements.define('quantity-div', QuantityDiv): 1;
 
-        let editButton = document.createElement('button');
-        editButton.className = 'nav-but';
-        editButton.innerText = 'Editar';
-        this.addEditButtonEventListener(editButton);
-
-        let showItemDiv = document.querySelector('#show-item-div');
-        showItemDiv.innerHTML = '';
-        showItemDiv.append(itemName, itemBrand, itemQuantity, itemPresentation, editButton);
-    }
-    addEditButtonEventListener(editButton) {
-        // Agrega la funcionalidad del butón para editar la información del ítem.
-        editButton.addEventListener('click', () => {
-            let newForm = document.createElement('form-element');
-            newForm.type = 'change';
-            newForm.nombre = this.nombre;
-            newForm.marca = this.marca;
-            newForm.cantidad = this.cantidad;
-            newForm.presentacion = this.presentacion;
-
-            newForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-
-                document.querySelector('#alerting-element-change').innerText = '';
-                document.querySelectorAll('.alert-change-item-data').forEach((el) => {
-                    el.innerText = '';
-                })
-
-                let nombre = newForm.querySelector('#item-nombre').value;
-                let marca = newForm.querySelector('#item-marca').value;
-                let cantidad = parseInt(newForm.querySelector('#item-cantidad').value);
-                let presentacion = newForm.querySelector('#item-presentacion').value;
-
-                if (!checkValidInputs(nombre, cantidad, presentacion, 'change')) return;
-
-                let stock = new Stock();
-                stock.getStockFromStorage();
-                stock.changeParameters(this.id, nombre, marca, cantidad, presentacion);
-                stock.saveStockInStorage();
-                
-                document.querySelector('#change-item-div').innerHTML = '';
-
-                document.querySelector('#stock-div').style.display = 'block';
-                document.querySelector('#change-item-div').style.display = 'none';
-
-                stock.displayStock();
-            })
-
-            document.querySelector('#show-item-div').style.display = 'none';
-            document.querySelector('#change-item-div').style.display = 'block';
-
-            document.querySelector('#change-item-div').append(newForm);
-
-        })
-    }
-    changeParameters(nombre, marca, cantidad, presentacion) {
-        // Cambia los parámetros del ítem.
-        // TODO: modificar para que sólo sea necesario poner lo que se desea cambiar.
-        this.nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1).toLowerCase();
-        this.marca = marca.charAt(0).toUpperCase() + marca.slice(1).toLowerCase();
-        this.cantidad = cantidad;
-        this.presentacion = presentacion.charAt(0).toUpperCase() + presentacion.slice(1).toLowerCase();
-    }
-}
-
-class Stock {
+export default class Stock {
     // Objeto que contiene los Items del stock. Contiene objetos de la clase Item
     constructor() {
         this.items = [];
@@ -165,6 +72,7 @@ class Stock {
 
         this.items.forEach((item) => {
             tableRow = document.createElement('tr');
+            tableRow.className = 'stock-item-row';
 
             for (const property in item) {
                 tableData = document.createElement('td');
@@ -201,14 +109,10 @@ class Stock {
             editButton.className = 'stock-table-but';
             editButton.title = 'Editar'
             editButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg>';
-
-            editButton.addEventListener('click', (event) => {
-                this.addEditButtonEventListener(editButton);
-
-                event.stopPropagation();
-            });
+            item.addEditButtonEventListener(editButton);
 
             tableData.append(editButton, deleteButton);
+            tableData.style.align
 
             tableRow.append(tableData);
 

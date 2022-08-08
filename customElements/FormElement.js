@@ -1,7 +1,7 @@
 /**
  * Clase que define un elemento HTML personalizado. Permite crear variaciones del mismo formulario
  */
-class FormElement extends HTMLElement {
+export default class FormElement extends HTMLElement {
     constructor() {
         super();
     }
@@ -120,6 +120,3 @@ class FormElement extends HTMLElement {
         this.render();
     }
 }
-
-// Asigno la clase a un elemento personalizado
-customElements.define('form-element', FormElement);
