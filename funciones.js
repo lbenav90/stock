@@ -1,46 +1,48 @@
 import Stock from './clases/Stock.js';
-import Item from './clases/Item.js';
 
-/**
- * Chequea que los inputs en los formularios sean válidos y si no lo son, agrega alertas en el formulario
- * @param {str} nombre 
- * @param {int} cantidad 
- * @param {str} presentacion 
- * @param {str} type 'add' o 'change', los dos tipos de formularios
- * @returns bool, indica si los inputs son válidos
- */
-export function checkValidInputs(nombre, marca, cantidad, presentacion, type) {
-    if ((isNaN(cantidad) || cantidad <= 0) || nombre === '' || presentacion === '') {
+export function checkValidInputs(id, name, brand, quantity, minQuantity, presentation, type) {
+    if ((isNaN(quantity) || quantity <= 0) || (isNaN(minQuantity) && quantity <= 0) || name === '' || presentation === '') {
         // Chequea que ingresen nombre, presentación y una cantidad válida. 
         // Si alguno es inválido, chequea todos para poner las alertas correspondientes.
-        if (nombre === '') {
+        if (name === '') {
             document.querySelector(`#alerting-element-${type}`).innerText += 'Ingresar un nombre\n';
-            document.querySelector(`#alert-nombre-data`).innerText += '*';
+            document.querySelector(`#alert-name-data`).innerText += '*';
         }
-        if (isNaN(cantidad) || cantidad <= 0) {
+        if (isNaN(quantity) || quantity <= 0) {
             document.querySelector(`#alerting-element-${type}`).innerText += 'Cantidad inválida\n';
-            document.querySelector(`#alert-cantidad-data`).innerText += '*';
+            document.querySelector(`#alert-quantity-data`).innerText += '*';
         }
-        if (presentacion === '') {
+        if (isNaN(minQuantity) || minQuantity <= 0) {
+            document.querySelector(`#alerting-element-${type}`).innerText += 'Cantidad mínima inválida\n';
+            document.querySelector(`#alert-minQuantity-data`).innerText += '*';
+        }
+        if (presentation === '') {
             document.querySelector(`#alerting-element-${type}`).innerText += 'Ingresar una presentación\n';
-            document.querySelector(`#alert-presentacion-data`).innerText += '*';
+            document.querySelector(`#alert-presentation-data`).innerText += '*';
         }
         return false;
     }
 
     let stock = new Stock ();
     stock.getStockFromStorage();
-    
-    let uniqueItem = true;
-    
+
+    let uniqueItems = true;
+
     stock.items.forEach((item) => {
-        if (nombre.toLowerCase().trim() === item.nombre.toLowerCase() && 
-            marca.toLowerCase().trim() === item.marca.toLowerCase() && 
-            presentacion.toLowerCase().trim() === item.presentacion.toLowerCase()) {   
+        if (type === 'change' && id === item.id){
+            1;
+        } else if (name.toLowerCase().trim() === item.name.toLowerCase() && 
+            brand.toLowerCase().trim() === item.brand.toLowerCase() && 
+            presentation.toLowerCase().trim() === item.presentation.toLowerCase()) {   
 
             document.querySelector(`#alerting-element-${type}`).innerText += 'Ítem ya existente\n';
-            uniqueItem = false;
+            uniqueItems = false;
         }
     })
-    return uniqueItem;
+
+    return uniqueItems;
+}
+
+export function cleanUpString(s) {
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }

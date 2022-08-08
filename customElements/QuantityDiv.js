@@ -34,6 +34,25 @@ export default class QuantityDiv extends HTMLElement {
             this.setAttribute('quantity', quantity)
             stock.saveStockInStorage();
 
+            this.parentElement.parentElement.removeEventListener('click', () => {
+                // Muestra la información del ítem seleccionado.
+                document.querySelector('#stock-div').style.display = 'none';
+                document.querySelector('#add-item-div').style.display = 'none';
+                document.querySelector('#show-item-div').style.display = 'block';
+                document.querySelector('#change-item-div').style.display = 'none';
+
+                item.displayItem();
+            })
+            this.parentElement.parentElement.addEventListener('click', () => {
+                // Muestra la información del ítem seleccionado.
+                document.querySelector('#stock-div').style.display = 'none';
+                document.querySelector('#add-item-div').style.display = 'none';
+                document.querySelector('#show-item-div').style.display = 'block';
+                document.querySelector('#change-item-div').style.display = 'none';
+
+                stock.getItem(itemId - 1).displayItem();
+            })
+
             this.connectedCallback();
         })
 
@@ -45,13 +64,34 @@ export default class QuantityDiv extends HTMLElement {
 
             let stock = new Stock();
             stock.getStockFromStorage();
-            stock.getItem(itemId - 1).decreaseStock();
-            quantity--;
-            stock.saveStockInStorage()
+            
+            if (stock.getItem(itemId - 1).decreaseStock()) {
+                quantity--;
+                stock.saveStockInStorage()
+    
+                this.setAttribute('quantity', quantity)
 
-            this.setAttribute('quantity', quantity)
+                this.parentElement.parentElement.removeEventListener('click', () => {
+                    // Muestra la información del ítem seleccionado.
+                    document.querySelector('#stock-div').style.display = 'none';
+                    document.querySelector('#add-item-div').style.display = 'none';
+                    document.querySelector('#show-item-div').style.display = 'block';
+                    document.querySelector('#change-item-div').style.display = 'none';
+    
+                    item.displayItem();
+                })
+                this.parentElement.parentElement.addEventListener('click', () => {
+                    // Muestra la información del ítem seleccionado.
+                    document.querySelector('#stock-div').style.display = 'none';
+                    document.querySelector('#add-item-div').style.display = 'none';
+                    document.querySelector('#show-item-div').style.display = 'block';
+                    document.querySelector('#change-item-div').style.display = 'none';
+    
+                    stock.getItem(itemId - 1).displayItem();
+                })
 
-            this.connectedCallback();
+                this.connectedCallback();
+            };
         })
         butDiv.append(plus, minus)
         div.append(span, butDiv);

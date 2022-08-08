@@ -62,6 +62,7 @@ body {
 .add-item-data, .change-item-data {
     column-width: 200px;
     padding: 5px 0px;
+    vertical-align: top;
 }
 
 #add-item-submit, #change-item-submit {

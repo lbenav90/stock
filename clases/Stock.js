@@ -54,31 +54,35 @@ export default class Stock {
         let tableRow = document.createElement('tr');
         let tableHeader;
 
-        // Un header por cada propiedad del ítem. Modificar en el fututo cuando haya más categorías.
-        for (const property in this.items[0]) {
+        // Sólo mostrar algunas propiedades del ítem en la tabla de stock
+        let stockTableHeaders = {'Id': 'id', 'Nombre': 'name', 'Marca': 'brand', 'Cantidad': 'quantity', 'Presentación': 'presentation'};
+        for (const header in stockTableHeaders) {
             tableHeader = document.createElement('th');
-            tableHeader.innerText = property.charAt(0).toUpperCase() + property.slice(1).toLowerCase();
+            tableHeader.innerText = header;
 
             tableRow.append(tableHeader);
-        }
+        };
 
-        // Header vacío para el botón de borrar;
+        // Header vacío para los botones de acción
         tableHeader = document.createElement('th');
         tableRow.append(tableHeader);
 
         stockTableHead.append(tableRow);
         
-        let tableData, deleteButton, editButton, quantityDiv;
+        let tableData, property, deleteButton, editButton, quantityDiv;
 
         this.items.forEach((item) => {
             tableRow = document.createElement('tr');
             tableRow.className = 'stock-item-row';
 
-            for (const property in item) {
+            for (const header in stockTableHeaders) {
+                let property = stockTableHeaders[header];
+
                 tableData = document.createElement('td');
-                if (property === 'cantidad') {
+
+                if (property === 'quantity') {
                     quantityDiv = document.createElement('quantity-div');
-                    quantityDiv.quantity = item[property];
+                    quantityDiv.quantity = item.quantity;
                     quantityDiv.itemId = item.id
 
                     tableData.append(quantityDiv);
@@ -89,7 +93,7 @@ export default class Stock {
                 }
 
                 tableRow.append(tableData);
-            }
+            };
 
             tableData = document.createElement('td');
             deleteButton = document.createElement('button');
@@ -112,7 +116,6 @@ export default class Stock {
             item.addEditButtonEventListener(editButton);
 
             tableData.append(editButton, deleteButton);
-            tableData.style.align
 
             tableRow.append(tableData);
 
@@ -138,8 +141,8 @@ export default class Stock {
         if (savedStock) {
             this.items = [];
             savedStock.forEach((item) => {
-                newItem = new Item(item.id, item.nombre, item.marca,
-                                   parseInt(item.cantidad),item.presentacion)
+                newItem = new Item(item.id, item.name, item.brand, parseInt(item.quantity), parseInt(item.minQuantity),
+                                   item.presentation, item.description, item.stockName);
 
                 this.items.push(newItem)
             })
@@ -147,8 +150,8 @@ export default class Stock {
             this.items = [];
         }
     }
-    changeParameters(id, nombre, marca, cantidad, presentacion) {
+    changeParameters(id, name, brand, quantity, minQuantity, presentation, description) {
         let item = this.items[id - 1];
-        item.changeParameters(nombre, marca, cantidad, presentacion);
+        item.changeParameters(name, brand, quantity, minQuantity, presentation, description);
     }
 };

@@ -1,41 +1,57 @@
 import Stock from './Stock.js'
 import FormElement from '../customElements/FormElement.js'
+import { cleanUpString, checkValidInputs } from '../funciones.js';
 
 !customElements.get('form-element')? customElements.define('form-element', FormElement): 1;
 
 export default class Item {
     // Objeto que contiene la información de un ítem del stock
-    constructor(id, nombre, marca, cantidad, presentacion) {
+    constructor(id, name, brand, quantity, minQuantity, presentation, description, stockName) {
         this.id = id;
-        this.nombre = nombre;
-        this.marca = marca;
-        this.cantidad = cantidad;
-        this.presentacion = presentacion;
+        this.name = name;
+        this.brand = brand;
+        this.quantity = quantity;
+        this.minQuantity = minQuantity || 1;
+        this.presentation = presentation;
+        this.description = description;
+        this.stockName = stockName;
     }
     increaseStock(){
-        this.cantidad++;
+        this.quantity++;
     }
     decreaseStock(){
-        this.cantidad--;
+        // Evita que la cantidad se vaya a menos que cero
+        if (this.quantity > 0) {
+            this.quantity--;
+            return true;
+        } else {
+            return false
+        }
     }
     displayItem() {
         // Método que crea el HTML conteniendo la información del ítem.
         // Refactorizar en un custom element?
         let itemName = document.createElement('h3');
-        itemName.innerText = this.nombre;
+        itemName.innerText = this.name;
 
         let itemBrand = document.createElement('p');
-        if (this.marca === '') {
+        if (this.brand === '') {
             itemBrand.innerText = 'Marca: None';
         } else {
-            itemBrand.innerText = `Marca: ${this.marca}`;
+            itemBrand.innerText = `Marca: ${this.brand}`;
         }
         
         let itemQuantity = document.createElement('p');
-        itemQuantity.innerText = `Cantidad: ${this.cantidad}`;
+        itemQuantity.innerText = `Cantidad: ${this.quantity}`;
+
+        let itemMinQuantity = document.createElement('p');
+        itemMinQuantity.innerText = `Cantidad mínima: ${this.minQuantity}`;
         
         let itemPresentation = document.createElement('p');
-        itemPresentation.innerText = `Presentación: ${this.presentacion}`;
+        itemPresentation.innerText = `Presentación: ${this.presentation}`;
+
+        let itemDescription = document.createElement ('p');
+        itemDescription.innerText = `Descripción: ${this.description}`;
 
         let editButton = document.createElement('button');
         editButton.className = 'nav-but';
@@ -44,7 +60,7 @@ export default class Item {
 
         let showItemDiv = document.querySelector('#show-item-div');
         showItemDiv.innerHTML = '';
-        showItemDiv.append(itemName, itemBrand, itemQuantity, itemPresentation, editButton);
+        showItemDiv.append(itemName, itemBrand, itemQuantity, itemMinQuantity, itemPresentation, itemDescription, editButton);
     }
     addEditButtonEventListener(editButton) {
         // Agrega la funcionalidad del butón para editar la información del ítem.
@@ -55,10 +71,12 @@ export default class Item {
 
             let newForm = document.createElement('form-element');
             newForm.type = 'change';
-            newForm.nombre = this.nombre;
-            newForm.marca = this.marca;
-            newForm.cantidad = this.cantidad;
-            newForm.presentacion = this.presentacion;
+            newForm.name = this.name;
+            newForm.brand = this.brand;
+            newForm.quantity = this.quantity;
+            newForm.minQuantity = this.minQuantity;
+            newForm.presentation = this.presentation;
+            newForm.description = this.description;
 
             newForm.addEventListener('submit', (event) => {
                 event.preventDefault();
@@ -68,16 +86,18 @@ export default class Item {
                     el.innerText = '';
                 })
 
-                let nombre = newForm.querySelector('#item-nombre').value;
-                let marca = newForm.querySelector('#item-marca').value;
-                let cantidad = parseInt(newForm.querySelector('#item-cantidad').value);
-                let presentacion = newForm.querySelector('#item-presentacion').value;
+                let name = newForm.querySelector('#item-name').value.trim();
+                let brand = newForm.querySelector('#item-brand').value.trim();
+                let quantity = parseInt(newForm.querySelector('#item-quantity').value);
+                let minQuantity = parseInt(newForm.querySelector('#item-minQuantity').value)
+                let presentation = newForm.querySelector('#item-presentation').value.trim();
+                let description = newForm.querySelector('#item-description').value.trim();
 
-                if (!checkValidInputs(nombre, marca, cantidad, presentacion, 'change')) return;
+                if (!checkValidInputs(this.id, name, brand, quantity, minQuantity, presentation, 'change')) return;
 
                 let stock = new Stock();
                 stock.getStockFromStorage();
-                stock.changeParameters(this.id, nombre, marca, cantidad, presentacion);
+                stock.changeParameters(this.id, name, brand, quantity, minQuantity, presentation, description);
                 stock.saveStockInStorage();
                 
                 document.querySelector('#change-item-div').innerHTML = '';
@@ -98,12 +118,14 @@ export default class Item {
 
         })
     }
-    changeParameters(nombre, marca, cantidad, presentacion) {
+    changeParameters(name, brand, quantity, minQuantity, presentation, description) {
         // Cambia los parámetros del ítem.
         // TODO: modificar para que sólo sea necesario poner lo que se desea cambiar.
-        this.nombre = nombre.charAt(0).toUpperCase() + nombre.slice(1).toLowerCase();
-        this.marca = marca.charAt(0).toUpperCase() + marca.slice(1).toLowerCase();
-        this.cantidad = cantidad;
-        this.presentacion = presentacion.charAt(0).toUpperCase() + presentacion.slice(1).toLowerCase();
+        this.name = cleanUpString(name);
+        this.brand = cleanUpString(brand);
+        this.quantity = quantity;
+        this.minQuantity = minQuantity;
+        this.presentation = cleanUpString(presentation);
+        this.description = cleanUpString(description);
     }
 }
