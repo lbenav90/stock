@@ -1,0 +1,139 @@
+body {
+    padding: 20px;
+}
+
+.navigation-buttons {
+    display: flex;
+}
+
+.nav-but {
+    margin: 5px;
+    background-color: white;
+    border: 1px solid #3585fd;
+    border-radius: 3px;
+    padding: 3px 5px;
+    color: #3585fd;
+}
+
+.nav-but:hover {
+    color: white;
+    background-color: #3585fd;
+}
+
+.nav-but:focus-visible {
+    outline: 1px solid #3585fd;
+}
+
+.stock-item-row {
+    vertical-align: middle;
+}
+
+.stock-table-but {
+    color: #aaaaaa;
+    border: 1px solid #dddddd;
+    font-size: 9px;
+    height: 35px;
+    width: 35px;
+}
+
+.stock-table-but:hover {
+    color: white;
+    background-color: #aaaaaa;
+}  
+
+#add-item-div {
+    display: none;
+}
+
+#show-stock-div {
+    display: block;
+}
+
+#show-item-div {
+    display: none;
+}
+
+#add-item-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.add-item-data, .change-item-data {
+    column-width: 200px;
+    padding: 5px 0px;
+    vertical-align: top;
+}
+
+#add-item-submit, #change-item-submit {
+    display: flex;
+    justify-content: right;
+}
+
+#add-item-submit-input, #change-item-submit-input{
+    margin: 5px;
+    background-color: white;
+    border: 1px solid #3585fd;
+    border-radius: 3px;
+    padding: 3px 5px;
+    color: #3585fd;
+}
+
+#add-item-submit-input:hover , #change-item-submit-input:hover {
+    color: white;
+    background-color: #3585fd;
+}
+
+#alerting-element-add, #alerting-element-change {
+    color: red;
+    font-size: 10pt;
+}
+
+.alert-add-item-data, .alert-change-item-data {
+    color: red;
+}
+
+.quantity-div {
+    display: flex;
+    flex-direction: row;
+    height: 30px;
+    width: 80px;
+    align-items: center;
+}
+
+.quantity-but-div {
+    display: flex;
+    flex-direction: column;
+}
+
+.quantity-but {
+    display: flex;
+    height: 20px; 
+    width: 25px;
+    border: 1px solid #dddddd;
+    align-items: center;
+    justify-content: center;
+    font-size: 9pt;
+    font-weight: bold;
+    padding: 0px;
+    color: #888888;
+}
+
+.quantity-but:hover {
+    background-color: #dddddd;
+    color: #eeeeee;
+}
+
+.quantity-span {
+    padding: 5px;
+    width: 50px;
+}
+
+.quantity-plus {
+    font-size: 11pt;
+    border-radius: 5px 5px 0px 0px;
+}
+
+.quantity-minus {
+    border-radius: 0px 0px 5px 5px;
+}
