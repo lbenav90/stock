@@ -12,7 +12,7 @@ export default class QuantityDiv extends HTMLElement {
     connectedCallback() {
         this.innerHTML = '';
         
-        let quantity = this.getAttribute('quantity') || '';
+        let quantity = this.getAttribute('quantity') || 0;
         let itemId = this.getAttribute('itemId') || null;
 
         let div = document.createElement('div');

@@ -38,7 +38,7 @@ export default class FormElement extends HTMLElement {
 
         // La variable html va a juntar todo el string que genera el HTML del elemento.
         // No se usa .innerHTML aca porque no funciona, debe ser asignado de una y no utilizando +=
-        let html =  `<h3>${title}</h3><br>`;
+        let html =  `<h3 class="stock-form-title">${title}</h3><br>`;
         html += `<form method="post" id="${type}-item-form"><table>`;
 
         // Genero cada campo del formulario como una fila en la tabla.
@@ -51,10 +51,13 @@ export default class FormElement extends HTMLElement {
 
                 // Este condicional permite cambiar el texto del botón.
                 if (type == 'add') {
-                    html += `<input type="submit" id="${type}-item-submit-input" value="Agregar"></td>`;
+                    html += `<input type="submit" class="btn btn-outline-secondary" id="${type}-item-submit-input" value="Agregar">`;
                 } else {
-                    html += `<input type="submit" id="${type}-item-submit-input" value="Guardar"></td>`;
+                    html += `<input type="submit" class="btn btn-outline-secondary" id="${type}-item-submit-input" value="Guardar">`;
                 }
+
+                html += `<button class="btn btn-outline-secondary" id="return-but">Volver</button></td>`
+
             } else {
 
                 html += `<td class="${type}-item-data"><label for="item-${formRows[row]}">`;
@@ -66,22 +69,22 @@ export default class FormElement extends HTMLElement {
                 // Agrega el valor a cada input. Si es un formulario 'add', los valores defaultean a ''.
                 switch (row) {
                     case 'Nombre':
-                        html += `<input type="text" id="item-${formRows[row]}" value="${name}"></td>`;
+                        html += `<input type="text" class="stock-input" id="item-${formRows[row]}" value="${name}"></td>`;
                         break;
                     case 'Marca':
-                        html += `<input type="text" id="item-${formRows[row]}" value="${brand}"></td>`;
+                        html += `<input type="text" class="stock-input" id="item-${formRows[row]}" value="${brand}"></td>`;
                         break;
                     case 'Cantidad':
-                        html += `<input type="number" id="item-${formRows[row]}" value="${quantity}"></td>`;
+                        html += `<input type="number" class="stock-input" id="item-${formRows[row]}" value="${quantity}"></td>`;
                         break;
                     case 'Cantidad mínima':
-                        html += `<input type="number" id="item-${formRows[row]}" value="${minQuantity}"></td>`
+                        html += `<input type="number" class="stock-input" id="item-${formRows[row]}" value="${minQuantity}"></td>`
                         break;
                     case 'Presentación':
-                        html += `<input type="text" id="item-${formRows[row]}" value="${presentation}"></td>`;
+                        html += `<input type="text" class="stock-input" id="item-${formRows[row]}" value="${presentation}"></td>`;
                         break;
                     case 'Descripción':
-                        html += `<textarea id="item-${formRows[row]}" rows="4" cols="50">${description}</textarea></td>`;
+                        html += `<textarea class="stock-input" id="item-${formRows[row]}" rows="4" cols="50">${description}</textarea></td>`;
                         break;
                 }
 

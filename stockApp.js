@@ -1,7 +1,7 @@
 import Stock from './clases/Stock.js';
 import Item from './clases/Item.js';
 import FormElement from './customElements/FormElement.js'
-import { checkValidInputs, getFormValues, showPage } from "./funciones.js";
+import { checkValidInputs, getFormValues, showPage, emptyFormAlerts } from "./funciones.js";
 
 !customElements.get('form-element')? customElements.define('form-element', FormElement): //pass
 
@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         newForm.addEventListener('submit', (event) => {
             event.preventDefault()
+
+            emptyFormAlerts('add');
             
             let inputs = getFormValues();
             
@@ -31,14 +33,19 @@ document.addEventListener('DOMContentLoaded', () => {
             showPage('stock-div');
             stock.displayStock();
         });
-        
+
         document.querySelector('#add-item-div').append(newForm);
+        
+        document.querySelector('#return-but').addEventListener('click', (event) => {
+            showPage('stock-div');
+    
+            stock.displayStock();
+        })
     })
 
     document.querySelector('#show-stock-but').addEventListener('click', () => {
         showPage('stock-div');
 
-        stock.getStockFromStorage();
         stock.displayStock();
     });      
     

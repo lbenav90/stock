@@ -88,3 +88,14 @@ export function getFormValues() {
 
     return [name, brand, quantity, minQuantity, presentation, description];
 }
+
+export function emptyFormAlerts(type) {
+    let dataHeader = ['name', 'brand', 'quantity', 'minQuantity', 'presentation', 'description'];
+    document.querySelector(`#alerting-element-${type}`).innerHTML = '';
+    dataHeader.forEach((header) => {
+        document.querySelector(`#item-${header}`).innerHTML = '';
+    })
+    document.querySelectorAll(`.alert-${type}-item-data`).forEach((el) => {
+        el.innerHTML = '';
+    })
+}

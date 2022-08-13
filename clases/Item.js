@@ -1,6 +1,6 @@
 import Stock from './Stock.js'
 import FormElement from '../customElements/FormElement.js'
-import { checkValidInputs, showPage, getFormValues } from '../funciones.js';
+import { checkValidInputs, showPage, getFormValues, emptyFormAlerts } from '../funciones.js';
 
 !customElements.get('form-element')? customElements.define('form-element', FormElement): 1;
 
@@ -50,7 +50,7 @@ export default class Item {
         itemDescription.innerText = (this.description === '')? 'Descripción: None' : `Descripción: ${this.description}`;
 
         let editButton = document.createElement('button');
-        editButton.className = 'nav-but';
+        editButton.className = 'btn btn-outline-secondary';
         editButton.innerText = 'Editar';
         this.addEditButtonEventListener(editButton);
 
@@ -77,10 +77,7 @@ export default class Item {
             newForm.addEventListener('submit', (event) => {
                 event.preventDefault();
 
-                document.querySelector('#alerting-element-change').innerText = '';
-                document.querySelectorAll('.alert-change-item-data').forEach((el) => {
-                    el.innerText = '';
-                })
+                emptyFormAlerts('change');
 
                 let inputs = getFormValues();
 
@@ -100,6 +97,13 @@ export default class Item {
 
 
             document.querySelector('#change-item-div').append(newForm);
+
+            document.querySelector('#return-but').addEventListener('click', () => {
+                showPage('stock-div');
+    
+                let stock = new Stock();
+                stock.displayStock();
+            })
 
         })
     }
