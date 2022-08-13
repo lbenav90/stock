@@ -56,6 +56,7 @@ export default class FormElement extends HTMLElement {
                     html += `<input type="submit" class="btn btn-outline-secondary" id="${type}-item-submit-input" value="Guardar">`;
                 }
 
+                // Botón de volver
                 html += `<button class="btn btn-outline-secondary" id="return-but">Volver</button></td>`
 
             } else {

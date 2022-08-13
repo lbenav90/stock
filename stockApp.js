@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelector('#add-item-div').append(newForm);
         
+        // Boton para volver al stock
         document.querySelector('#return-but').addEventListener('click', (event) => {
             showPage('stock-div');
     

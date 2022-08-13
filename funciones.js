@@ -1,5 +1,10 @@
 import Stock from './clases/Stock.js';
 
+/**
+ * Checks if the inputs have a base validity and checks for mandatory fields.
+ * @param inputs - values entered to form
+ * @returns bool - if the inputs are valid or not
+ */
 export function checkValidInputs(id, name, brand, quantity, minQuantity, presentation, description, type) {
     if ((isNaN(quantity) || quantity <= 0) || (isNaN(minQuantity) && quantity <= 0) || name === '' || presentation === '') {
         // Chequea que ingresen nombre, presentación y una cantidad válida. 
@@ -28,8 +33,10 @@ export function checkValidInputs(id, name, brand, quantity, minQuantity, present
 
     let uniqueItems = true;
 
+    // No deja agregar un ítem que tiene el mismo nombre, marca y presentación que uno ya existente
     stock.items.forEach((item) => {
         if (type === 'change' && id === item.id){
+            // Esto evita chequear un ítem consigo mismo en modo EDITAR
             return;
         } else if (name.toLowerCase().trim() === item.name.toLowerCase() && 
                    brand.toLowerCase().trim() === item.brand.toLowerCase() && 
@@ -43,10 +50,20 @@ export function checkValidInputs(id, name, brand, quantity, minQuantity, present
     return uniqueItems;
 }
 
+/**
+ * Capitalizes the first letter and makes everything else lowercase. Basic clean up. IMPROVE LATER
+ * @param {str} s string to clean up
+ * @returns a formatted string
+ */
 export function cleanUpString(s) {
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }
 
+/**
+ * Shows the requested div and hides the others
+ * @param {str} divClassShow id of the div to be shown
+ * @returns bool - correct execution
+ */
 export function showPage(divClassShow) {
     let divClasses = ['stock-div', 'add-item-div', 'show-item-div', 'change-item-div', 'low-stock-div'];
     let div;
@@ -78,6 +95,11 @@ export function showPage(divClassShow) {
 
 }
 
+/**
+ * Gets the values from the input fields, both for 'add' and 'change' forms. 
+ * Trims leading and tailing whitespace and parses the integer fields.
+ * @returns array of cleaned and parsed inputs
+ */
 export function getFormValues() {
     let name = cleanUpString(document.querySelector('#item-name').value.trim());
     let brand = cleanUpString(document.querySelector('#item-brand').value.trim());
@@ -89,6 +111,10 @@ export function getFormValues() {
     return [name, brand, quantity, minQuantity, presentation, description];
 }
 
+/**
+ * empties the table fields used to alert the user to invalid inputs
+ * @param {str} type 'add' or 'change' - form version
+ */
 export function emptyFormAlerts(type) {
     let dataHeader = ['name', 'brand', 'quantity', 'minQuantity', 'presentation', 'description'];
     document.querySelector(`#alerting-element-${type}`).innerHTML = '';
