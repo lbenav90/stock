@@ -1,6 +1,6 @@
 import Stock from './clases/Stock.js';
 
-export function checkValidInputs(id, name, brand, quantity, minQuantity, presentation, type) {
+export function checkValidInputs(id, name, brand, quantity, minQuantity, presentation, description, type) {
     if ((isNaN(quantity) || quantity <= 0) || (isNaN(minQuantity) && quantity <= 0) || name === '' || presentation === '') {
         // Chequea que ingresen nombre, presentación y una cantidad válida. 
         // Si alguno es inválido, chequea todos para poner las alertas correspondientes.
@@ -30,10 +30,10 @@ export function checkValidInputs(id, name, brand, quantity, minQuantity, present
 
     stock.items.forEach((item) => {
         if (type === 'change' && id === item.id){
-            1;
+            return;
         } else if (name.toLowerCase().trim() === item.name.toLowerCase() && 
-            brand.toLowerCase().trim() === item.brand.toLowerCase() && 
-            presentation.toLowerCase().trim() === item.presentation.toLowerCase()) {   
+                   brand.toLowerCase().trim() === item.brand.toLowerCase() && 
+                   presentation.toLowerCase().trim() === item.presentation.toLowerCase()) {   
 
             document.querySelector(`#alerting-element-${type}`).innerText += 'Ítem ya existente\n';
             uniqueItems = false;
@@ -72,8 +72,19 @@ export function showPage(divClassShow) {
                                                       <table id="stock-table" class="table table-hover">
                                                           <thead id="stock-table-head"></thead>
                                                           <tbody id="stock-table-body"></tbody>
-                                                      </table>`
+                                                      </table>`;
 
     return true;
 
+}
+
+export function getFormValues() {
+    let name = cleanUpString(document.querySelector('#item-name').value.trim());
+    let brand = cleanUpString(document.querySelector('#item-brand').value.trim());
+    let quantity = parseInt(document.querySelector('#item-quantity').value);
+    let minQuantity = parseInt(document.querySelector('#item-minQuantity').value)
+    let presentation = cleanUpString(document.querySelector('#item-presentation').value.trim());
+    let description = cleanUpString(document.querySelector('#item-description').value.trim());
+
+    return [name, brand, quantity, minQuantity, presentation, description];
 }

@@ -147,8 +147,8 @@ export default class Stock {
             this.items = [];
         }
     }
-    changeParameters(id, name, brand, quantity, minQuantity, presentation, description) {
+    changeParameters(id, inputs) {
         let item = this.items[id - 1];
-        item.changeParameters(name, brand, quantity, minQuantity, presentation, description);
+        item.changeParameters(inputs);
     }
 };

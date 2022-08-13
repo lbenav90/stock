@@ -1,6 +1,6 @@
 import Stock from './Stock.js'
 import FormElement from '../customElements/FormElement.js'
-import { cleanUpString, checkValidInputs, showPage } from '../funciones.js';
+import { checkValidInputs, showPage, getFormValues } from '../funciones.js';
 
 !customElements.get('form-element')? customElements.define('form-element', FormElement): 1;
 
@@ -35,11 +35,7 @@ export default class Item {
         itemName.innerText = this.name;
 
         let itemBrand = document.createElement('p');
-        if (this.brand === '') {
-            itemBrand.innerText = 'Marca: None';
-        } else {
-            itemBrand.innerText = `Marca: ${this.brand}`;
-        }
+        itemBrand.innerText = (this.brand === '')? 'Marca: None' : `Marca: ${this.brand}`;
         
         let itemQuantity = document.createElement('p');
         itemQuantity.innerText = `Cantidad: ${this.quantity}`;
@@ -51,7 +47,7 @@ export default class Item {
         itemPresentation.innerText = `Presentación: ${this.presentation}`;
 
         let itemDescription = document.createElement ('p');
-        itemDescription.innerText = `Descripción: ${this.description}`;
+        itemDescription.innerText = (this.description === '')? 'Descripción: None' : `Descripción: ${this.description}`;
 
         let editButton = document.createElement('button');
         editButton.className = 'nav-but';
@@ -86,18 +82,13 @@ export default class Item {
                     el.innerText = '';
                 })
 
-                let name = newForm.querySelector('#item-name').value.trim();
-                let brand = newForm.querySelector('#item-brand').value.trim();
-                let quantity = parseInt(newForm.querySelector('#item-quantity').value);
-                let minQuantity = parseInt(newForm.querySelector('#item-minQuantity').value)
-                let presentation = newForm.querySelector('#item-presentation').value.trim();
-                let description = newForm.querySelector('#item-description').value.trim();
+                let inputs = getFormValues();
 
-                if (!checkValidInputs(this.id, name, brand, quantity, minQuantity, presentation, 'change')) return;
+                if (!checkValidInputs(this.id, ...inputs, 'change')) return;
 
                 let stock = new Stock();
                 stock.getStockFromStorage();
-                stock.changeParameters(this.id, name, brand, quantity, minQuantity, presentation, description);
+                stock.changeParameters(this.id, inputs);
                 stock.saveStockInStorage();
                 
                 showPage('stock-div');
@@ -112,14 +103,9 @@ export default class Item {
 
         })
     }
-    changeParameters(name, brand, quantity, minQuantity, presentation, description) {
+    changeParameters(inputs) {
         // Cambia los parámetros del ítem.
         // TODO: modificar para que sólo sea necesario poner lo que se desea cambiar.
-        this.name = cleanUpString(name);
-        this.brand = cleanUpString(brand);
-        this.quantity = quantity;
-        this.minQuantity = minQuantity;
-        this.presentation = cleanUpString(presentation);
-        this.description = cleanUpString(description);
+        [this.name, this.brand, this.quantity, this.minQuantity, this.presentation, this.description] = inputs;
     }
 }

@@ -1,5 +1,153 @@
+:root {
+    font-size: 16px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --text-primary: #b6b6b6;
+    --text-secondary: #ececec;
+    --bg-primary: #23232e;
+    --bg-secondary: #141418;
+    --transition-speed: 600ms;
+}
+
 body {
-    padding: 20px;
+    color: black;
+    background-color: white;
+    margin: 0;
+    padding: 0;
+}
+
+body::-webkit-scrollbar {
+    width: 0.25rem;
+}
+
+body::-webkit-scrollbar-track {
+    background: #1e1e24;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: #6649b8;
+}
+
+.navbar {
+    width: 5rem;
+    height: 100vh;
+    position: fixed;
+    background-color: var(--bg-primary);
+    transition: width 200ms ease;
+}
+
+.navbar-nav{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nav-item {
+    width: 100%;
+}
+
+.nav-item:hover {
+    background-color: var(--bg-secondary);
+}
+
+.nav-item:hover svg {
+    fill: var(--text-secondary);
+}
+
+.navbar:hover .logo-text{
+    display: block;
+}
+
+.nav-item:hover .link-text{
+    color: var(--text-secondary);
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    height: 5rem;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.nav-link svg {
+    min-width: 2rem;
+    margin: 0 1.5rem;
+    fill: var(--text-primary); 
+}
+
+.link-text {
+    display: none;
+    margin-left: 1rem;
+}
+
+.logo {
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: var(--text-secondary);
+    background-color: var(--bg-secondary);
+    font-size: 1.5rem;
+    width: 100%;
+}
+
+.logo-text{
+    display: none;
+}
+
+.logo svg {
+    transform: rotate(0deg);
+    transition: transform var(--transition-speed);
+}
+
+#container-div {
+    padding: 1rem;
+}
+
+@media only screen and (min-width: 600px){
+    .navbar{
+        top: 0;
+        width: 5rem;
+        height: 100vh;
+    }
+
+    .navbar:hover {
+        width: 16rem;
+    }
+
+    .navbar:hover .link-text{
+        display: inline;
+    }
+
+    #container-div {
+        margin-left: 5rem;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .navbar {
+        bottom: 0;
+        height: 5rem;
+        width: 100vw;
+    }
+
+    .logo {
+        display: none;
+    }
+
+    .navbar-nav {
+        flex-direction: row;
+    }
+
+    .nav-link {
+        justify-content: center;
+    }
+
+    #container-div {
+        margin-bottom: 5rem;
+    }
 }
 
 .navigation-buttons {

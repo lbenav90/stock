@@ -1,6 +1,10 @@
 import Stock from '../clases/Stock.js'
 import { showPage } from '../funciones.js'
 
+/**
+ * Esta clase define un customElement para usar en la tabla de stock
+ * Contiene la cantidad del ítem en stock y dos botones, para aumentar y baar el stock, con sus funcionalidades agregadas
+ */
 export default class QuantityDiv extends HTMLElement {
     constructor() {
         super();

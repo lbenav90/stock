@@ -16,7 +16,7 @@ export default class FormElement extends HTMLElement {
         // Método que define el elemento personalizado. El atributo 'type' define si es un formulario para agregar o modificar ítems
         let type = this.getAttribute('type') || 'add';
 
-        // Atributos necesarios para los formularios de edición. Tal vez convenga utilizar dataclases TODO
+        // Atributos necesarios para los formularios de edición.
         let name = this.getAttribute('name') || '';
         let brand = this.getAttribute('brand') || '';
         let quantity = this.getAttribute('quantity') || '';
@@ -24,7 +24,7 @@ export default class FormElement extends HTMLElement {
         let presentation = this.getAttribute('presentation') || '';
         let description = this.getAttribute('description') || '';
 
-        // Deifno un título que va en un element h3
+        // Defino un título que va en un element h3. Sólo funciona si hay dos opciones de "type". Si no, usar switch
         let title = (type === 'add')? 'Agregar un ítem' : 'Modificar un ítem';
         
         // Objeto que me permite vincular los nombres en español con los nombres de las propiedades del Item
@@ -42,7 +42,6 @@ export default class FormElement extends HTMLElement {
         html += `<form method="post" id="${type}-item-form"><table>`;
 
         // Genero cada campo del formulario como una fila en la tabla.
-        // Dentro contiene las peculiaridades de cada campo
         for (const row in formRows) {
             html += '<tr>';
             if (row === '') {
@@ -57,7 +56,7 @@ export default class FormElement extends HTMLElement {
                     html += `<input type="submit" id="${type}-item-submit-input" value="Guardar"></td>`;
                 }
             } else {
-                // El resto de las filas son similares
+
                 html += `<td class="${type}-item-data"><label for="item-${formRows[row]}">`;
 
                 html += `${row}:</label></td>`;

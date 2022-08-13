@@ -1,70 +1,41 @@
 import Stock from './clases/Stock.js';
 import Item from './clases/Item.js';
 import FormElement from './customElements/FormElement.js'
-import { checkValidInputs, cleanUpString, showPage} from "./funciones.js";
+import { checkValidInputs, getFormValues, showPage } from "./funciones.js";
 
-!customElements.get('form-element')? customElements.define('form-element', FormElement): 1;
+!customElements.get('form-element')? customElements.define('form-element', FormElement): //pass
 
 document.addEventListener('DOMContentLoaded', () => {
     
     let stock = new Stock();
-
     stock.displayStock();
 
     document.querySelector('#add-item-but').addEventListener('click', () => {
-        // Oculto los divs que no correponden y muestro el que sí
-        showPage('add-item-div')
+        showPage('add-item-div');
 
-        // Creo un formulario en modo 'add'
+        // Creo un formulario en modo 'add' con un customElement
         let newForm = document.createElement('form-element');
         
         newForm.addEventListener('submit', (event) => {
             event.preventDefault()
-
-            // Borro contenidos de los elementos de alerta
-            document.querySelector('#alerting-element-add').innerText = '';
-            document.querySelectorAll('.alert-add-item-data').forEach((el) => {
-                el.innerText = '';
-            })
             
-            let name = document.querySelector('#item-name').value.trim();
-            let brand = document.querySelector('#item-brand').value.trim();
-            let quantity = parseInt(document.querySelector('#item-quantity').value);
-            let minQuantity = parseInt(document.querySelector('#item-minQuantity').value);
-            let presentation = document.querySelector('#item-presentation').value.trim();
-            let description = document.querySelector('#item-description').value.trim();
+            let inputs = getFormValues();
             
             // Si hay un input inválido, usa los elementos de alerta y finaliza la ejecución
-            if (!checkValidInputs(-1, name, brand, quantity, minQuantity, presentation, 'add')) return;
+            if (!checkValidInputs(-1, ...inputs, 'add')) return;
             
-            // Defino un nuevo Item
-            let newItem = new Item(stock.length() + 1, cleanUpString(name), cleanUpString(brand),
-                                   quantity, minQuantity, cleanUpString(presentation), cleanUpString(description), 'main')
+            // Defino un nuevo Item y muestro el stock
+            let newItem = new Item(stock.length() + 1, ...inputs, 'main')
             stock.addNewItem(newItem);
             
             showPage('stock-div');
-            
             stock.displayStock();
         });
         
         document.querySelector('#add-item-div').append(newForm);
-        
-        // Vacío los inputs
-        document.querySelector('#item-name').value = '';
-        document.querySelector('#item-brand').value = '';
-        document.querySelector('#item-quantity').value = '';
-        document.querySelector('#item-minQuantity').value = '';
-        document.querySelector('#item-presentation').value = '';
-        document.querySelector('#item-description').value = '';
-
-        document.querySelector('#alerting-element-add').innerText = ''
-        document.querySelectorAll('.alert-add-item-data').forEach((el) => {
-            el.innerText = '';
-        });
     })
 
     document.querySelector('#show-stock-but').addEventListener('click', () => {
-        // Oculto los divs que no correponden y muestro el que sí
         showPage('stock-div');
 
         stock.getStockFromStorage();
@@ -72,9 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });      
     
     document.querySelector('#prep-order-but').addEventListener('click', () => {
-        // Oculto los divs que no correponden y muestro el que sí
         showPage('low-stock-div');
 
+        // Busco el stock actualizado e itero sobre sus elementos, tomando aquellos con cantidades menores a su cantidad mínima
         stock = new Stock();
         stock.getStockFromStorage();
 
@@ -95,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             lowStockDiv.append(noLowStock);
             return;
         } else {
+            // Creo una tabla para mostrar los ítems con bajo stock
             let lowStockTable = document.createElement('table');
             lowStockTable.className = 'table table-hover';
 
@@ -114,23 +86,25 @@ document.addEventListener('DOMContentLoaded', () => {
         let tableHeader;
 
         // Sólo mostrar algunas propiedades del ítem en la tabla de bajo stock
+        // Este objeto me permite iterar y poner nombres de columnas y acceder a las propiedades de Item (en inglés)
         let lowStockTableHeaders = {'Id':           'id', 
                                     'Nombre':       'name', 
                                     'Marca':        'brand', 
                                     'Cantidad':     'quantity', 
                                     'Presentación': 'presentation'};
 
+        // Creo los headers de la tabla
         for (const header in lowStockTableHeaders) {
             tableHeader = document.createElement('th');
             tableHeader.innerText = header;
 
             tableRow.append(tableHeader);
         };
-
         lowStockTableHead.append(tableRow);
         
         let tableData, property;
 
+        // Agrego una línea con su información por cada ítem con bajo stock
         lowStockItems.forEach((item) => {
             tableRow = document.createElement('tr');
             tableRow.className = 'stock-item-row';
@@ -140,7 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 tableData = document.createElement('td');
 
-                tableData.innerText = (item[property] === '')? 'None' : item[property];
+                // Para campos no obligatorios, poner "Vacío" si no se ingresaron datos
+                tableData.innerText = (item[property] === '')? 'Vacío' : item[property];
 
                 tableRow.append(tableData);
             };
