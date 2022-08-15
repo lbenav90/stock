@@ -54,29 +54,9 @@ export default class Item {
         editButton.innerText = 'Editar';
         this.addEditButtonEventListener(editButton);
 
-        let delButton = document.createElement('button');
-        delButton.className = 'btn btn-outline-secondary';
-        delButton.innerText = 'Borrar';
-        
-        delButton.addEventListener('click', () => {
-            let stock = new Stock();
-            stock.getStockFromStorage()
-
-            stock.deleteItem(this.id - 1)
-        })
-
         let showItemDiv = document.querySelector('#show-item-div');
         showItemDiv.innerHTML = '';
-
-        let dataDiv = document.createElement('div');
-        dataDiv.className = 'item-data-div'
-        dataDiv.append(itemName, itemBrand, itemQuantity, itemMinQuantity, itemPresentation, itemDescription);
-
-        let butDiv = document.createElement('div');
-        butDiv.className = 'item-but-div';
-        butDiv.append(editButton, delButton)
-
-        showItemDiv.append(dataDiv, butDiv);
+        showItemDiv.append(itemName, itemBrand, itemQuantity, itemMinQuantity, itemPresentation, itemDescription, editButton);
     }
     addEditButtonEventListener(editButton) {
         // Agrega la funcionalidad del butón para editar la información del ítem.

@@ -217,11 +217,6 @@ body::-webkit-scrollbar-thumb {
     display: none;
 }
 
-.item-but-div{
-    display: flex;
-    gap: 10px;
-}
-
 #add-item-form {
     display: flex;
     flex-direction: column;

@@ -51,56 +51,6 @@ export default class QuantityDiv extends HTMLElement {
                 stock.getItem(itemId - 1).displayItem();
             })
 
-            let editButton = document.querySelector(`#stock-item-${itemId}-edit-but`)
-            editButton.removeEventListener('click', (event) => {
-                event.stopPropagation();
-
-                document.querySelector('#change-item-div').innerHTML = '';
-
-                let newForm = document.createElement('form-element');
-                newForm.type = 'change';
-                newForm.name = this.name;
-                newForm.brand = this.brand;
-                newForm.quantity = this.quantity;
-                newForm.minQuantity = this.minQuantity;
-                newForm.presentation = this.presentation;
-                newForm.description = this.description;
-
-                newForm.addEventListener('submit', (event) => {
-                    event.preventDefault();
-
-                    emptyFormAlerts('change');
-
-                    let inputs = getFormValues();
-
-                    if (!checkValidInputs(this.id, ...inputs, 'change')) return;
-
-                    let stock = new Stock();
-                    stock.getStockFromStorage();
-                    stock.changeParameters(this.id, inputs);
-                    stock.saveStockInStorage();
-                    
-                    showPage('stock-div');
-
-                    stock.displayStock();
-                })
-
-                showPage('change-item-div');
-
-
-                document.querySelector('#change-item-div').append(newForm);
-
-                document.querySelector('#return-but').addEventListener('click', () => {
-                    showPage('stock-div');
-        
-                    let stock = new Stock();
-                    stock.displayStock();
-                })
-
-            })
-
-            stock.getItem(itemId - 1).addEditButtonEventListener(editButton);
-
             this.connectedCallback();
         })
 
@@ -130,8 +80,6 @@ export default class QuantityDiv extends HTMLElement {
                     showPage('show-item-div');
                     stock.getItem(itemId - 1).displayItem();
                 })
-
-                // CAMBIAR EL EVENT LISTENER DEL EDIT BUTTON
 
                 this.connectedCallback();
             };
