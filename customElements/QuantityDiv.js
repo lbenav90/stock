@@ -13,7 +13,7 @@ export default class QuantityDiv extends HTMLElement {
         this.innerHTML = '';
         
         let quantity = this.getAttribute('quantity') || 0;
-        let itemId = this.getAttribute('itemId') || null;
+        let itemCode = this.getAttribute('itemCode') || null;
 
         let div = document.createElement('div');
         div.className = 'quantity-div';
@@ -35,7 +35,7 @@ export default class QuantityDiv extends HTMLElement {
 
             let stock = new Stock();
             stock.getStockFromStorage();
-            stock.getItem(itemId - 1).increaseStock();
+            stock.getItem(itemCode).increaseStock();
             quantity++;
             
             this.setAttribute('quantity', quantity)
@@ -48,10 +48,10 @@ export default class QuantityDiv extends HTMLElement {
             })
             this.parentElement.parentElement.addEventListener('click', () => {
                 showPage('show-item-div');
-                stock.getItem(itemId - 1).displayItem();
+                stock.getItem(itemCode).displayItem();
             })
 
-            let editButton = document.querySelector(`#stock-item-${itemId}-edit-but`)
+            let editButton = document.querySelector(`#stock-item-${itemCode}-edit-but`)
             editButton.removeEventListener('click', (event) => {
                 event.stopPropagation();
 
@@ -99,7 +99,7 @@ export default class QuantityDiv extends HTMLElement {
 
             })
 
-            stock.getItem(itemId - 1).addEditButtonEventListener(editButton);
+            stock.getItem(itemCode).addEditButtonEventListener(editButton);
 
             this.connectedCallback();
         })
@@ -115,7 +115,7 @@ export default class QuantityDiv extends HTMLElement {
             let stock = new Stock();
             stock.getStockFromStorage();
             
-            if (stock.getItem(itemId - 1).decreaseStock()) {
+            if (stock.getItem(itemCode).decreaseStock()) {
                 quantity--;
                 stock.saveStockInStorage()
     
@@ -128,10 +128,58 @@ export default class QuantityDiv extends HTMLElement {
                 })
                 this.parentElement.parentElement.addEventListener('click', () => {
                     showPage('show-item-div');
-                    stock.getItem(itemId - 1).displayItem();
+                    stock.getItem(itemCode).displayItem();
                 })
 
-                // CAMBIAR EL EVENT LISTENER DEL EDIT BUTTON
+                let editButton = document.querySelector(`#stock-item-${itemCode}-edit-but`)
+            editButton.removeEventListener('click', (event) => {
+                event.stopPropagation();
+
+                document.querySelector('#change-item-div').innerHTML = '';
+
+                let newForm = document.createElement('form-element');
+                newForm.type = 'change';
+                newForm.name = this.name;
+                newForm.brand = this.brand;
+                newForm.quantity = this.quantity;
+                newForm.minQuantity = this.minQuantity;
+                newForm.presentation = this.presentation;
+                newForm.description = this.description;
+
+                newForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+
+                    emptyFormAlerts('change');
+
+                    let inputs = getFormValues();
+
+                    if (!checkValidInputs(this.id, ...inputs, 'change')) return;
+
+                    let stock = new Stock();
+                    stock.getStockFromStorage();
+                    stock.changeParameters(this.id, inputs);
+                    stock.saveStockInStorage();
+                    
+                    showPage('stock-div');
+
+                    stock.displayStock();
+                })
+
+                showPage('change-item-div');
+
+
+                document.querySelector('#change-item-div').append(newForm);
+
+                document.querySelector('#return-but').addEventListener('click', () => {
+                    showPage('stock-div');
+        
+                    let stock = new Stock();
+                    stock.displayStock();
+                })
+
+            })
+
+            stock.getItem(itemCode).addEditButtonEventListener(editButton);
 
                 this.connectedCallback();
             };
@@ -144,14 +192,14 @@ export default class QuantityDiv extends HTMLElement {
         this.append(div);
     }
     static get observedAttributes() {
-        return ['quantity', 'itemId'];
+        return ['quantity', 'itemCode'];
     }
 
     // Setters y getters de las propiedades de la clase
     get quantity() { return this.hasAttribute('quantity'); }
-    get itemId() { return this.hasAttribute('itemId'); }
+    get itemCode() { return this.hasAttribute('itemCode'); }
 
     set quantity(val) { val? this.setAttribute('quantity', val) : this.removeAttribute('quantity'); }
-    set itemId(val) { val? this.setAttribute('itemId', val) : this.removeAttribute('itemId'); }
+    set itemCode(val) { val? this.setAttribute('itemCode', val) : this.removeAttribute('itemCode'); }
 
 }

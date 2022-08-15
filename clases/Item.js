@@ -6,7 +6,7 @@ import { checkValidInputs, showPage, getFormValues, emptyFormAlerts } from '../f
 
 export default class Item {
     // Objeto que contiene la información de un ítem del stock
-    constructor(id, name, brand, quantity, minQuantity, presentation, description, stockName) {
+    constructor(id, name, brand, quantity, minQuantity, presentation, description, stockName, code) {
         this.id = id;
         this.name = name;
         this.brand = brand;
@@ -15,6 +15,7 @@ export default class Item {
         this.presentation = presentation;
         this.description = description;
         this.stockName = stockName;
+        this.code = code;
     }
     increaseStock(){
         this.quantity++;
@@ -62,7 +63,7 @@ export default class Item {
             let stock = new Stock();
             stock.getStockFromStorage()
 
-            stock.deleteItem(this.id - 1)
+            stock.deleteItem(this.code)
         })
 
         let showItemDiv = document.querySelector('#show-item-div');
@@ -105,7 +106,7 @@ export default class Item {
 
                 let stock = new Stock();
                 stock.getStockFromStorage();
-                stock.changeParameters(this.id, inputs);
+                stock.changeParameters(this.code, inputs);
                 stock.saveStockInStorage();
                 
                 showPage('stock-div');

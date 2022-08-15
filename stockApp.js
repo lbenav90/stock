@@ -1,12 +1,13 @@
 import Stock from './clases/Stock.js';
 import Item from './clases/Item.js';
 import FormElement from './customElements/FormElement.js'
-import { checkValidInputs, getFormValues, showPage, emptyFormAlerts } from "./funciones.js";
+import { checkValidInputs, getFormValues, showPage, emptyFormAlerts, getCSVString, getUniqueCode } from "./funciones.js";
 
 !customElements.get('form-element')? customElements.define('form-element', FormElement): //pass
 
 document.addEventListener('DOMContentLoaded', () => {
-    
+    showPage('stock-div');
+
     let stock = new Stock();
     stock.displayStock();
 
@@ -27,7 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!checkValidInputs(-1, ...inputs, 'add')) return;
             
             // Defino un nuevo Item y muestro el stock
-            let newItem = new Item(stock.length() + 1, ...inputs, 'main')
+            let newItemCode = getUniqueCode(5, stock);
+            let newItem = new Item(stock.length() + 1, ...inputs, 'main', newItemCode)
             stock.addNewItem(newItem);
             
             showPage('stock-div');
@@ -37,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#add-item-div').append(newForm);
         
         // Boton para volver al stock
-        document.querySelector('#return-but').addEventListener('click', (event) => {
+        document.querySelector('#return-but').addEventListener('click', () => {
             showPage('stock-div');
     
             stock.displayStock();
@@ -65,26 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         })
 
-        let lowStockDiv = document.querySelector('#low-stock-div');
-
         // Si no hay ítems para pedir, muestro un texto que lo indica
         if (lowStockItems.length === 0) {
-            let noLowStock = document.createElement('h4');
-            noLowStock.innerText = 'No hay ítems con bajo stock!';
-            lowStockDiv.append(noLowStock);
+            document.querySelector('#no-low-stock-alert').style.display = 'block';
             return;
         } else {
-            // Creo una tabla para mostrar los ítems con bajo stock
-            let lowStockTable = document.createElement('table');
-            lowStockTable.className = 'table table-hover';
-
-            let lowStockTableHead = document.createElement('thead');
-            lowStockTableHead.id = 'low-stock-table-head';
-            let lowStockTableBody = document.createElement('tbody');
-            lowStockTableBody.id = 'low-stock-table-body';
-
-            lowStockTable.append(lowStockTableHead, lowStockTableBody);
-            lowStockDiv.append(lowStockTable);
+            document.querySelector('#no-low-stock-alert').style.display = 'none';        
         };
 
         let lowStockTableHead = document.querySelector('#low-stock-table-head');
@@ -108,6 +96,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tableRow.append(tableHeader);
         };
+
+        let exportBut = document.createElement('button');
+        exportBut.className = 'btn btn-outline-secondary';
+        exportBut.id = 'export-but';
+        exportBut.innerText = 'Exportar';
+        exportBut.addEventListener('click', () => {
+            let csvString = getCSVString(lowStockTableHeaders, lowStockItems);
+
+            let csvFile = new Blob([csvString], {
+                type: 'csv',
+                name: 'pedido.csv'
+            });
+
+            saveAs(csvFile, 'pedido.csv');
+        })
+
+        tableRow.append(exportBut);
         lowStockTableHead.append(tableRow);
         
         let tableData, property;
@@ -116,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lowStockItems.forEach((item) => {
             tableRow = document.createElement('tr');
             tableRow.className = 'stock-item-row';
+            tableRow.id = `stock-item-${item.code}-row`;
 
             for (const header in lowStockTableHeaders) {
                 property = lowStockTableHeaders[header];

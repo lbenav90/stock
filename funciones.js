@@ -75,7 +75,19 @@ export function showPage(divClassShow) {
     divClasses.forEach((divClass) => {
         div = document.querySelector(`#${divClass}`);
         
-        div.innerHTML = '';
+        switch (divClass) {
+            case 'stock-div':
+                div.querySelector('#stock-table-head').innerHTML = '';
+                div.querySelector('#stock-table-body').innerHTML = '';
+                break;
+            case 'low-stock-div':
+                div.querySelector('#low-stock-table-head').innerHTML = '';
+                div.querySelector('#low-stock-table-body').innerHTML = '';
+                break;
+            case 'add-item-div':
+            case 'change-item-div':
+                div.innerHTML = '';
+        }
 
         if (divClass === divClassShow) {
             div.style.display = 'block'
@@ -83,13 +95,6 @@ export function showPage(divClassShow) {
             div.style.display = 'none';
         }
     })
-
-    // Reescribo la tabla de stock
-    document.querySelector('#stock-div').innerHTML = `<h4 id="empty-stock-alert">No hay ítems aún, agrega algunos!</h4>
-                                                      <table id="stock-table" class="table table-hover">
-                                                          <thead id="stock-table-head"></thead>
-                                                          <tbody id="stock-table-body"></tbody>
-                                                      </table>`;
 
     return true;
 
@@ -124,4 +129,53 @@ export function emptyFormAlerts(type) {
     document.querySelectorAll(`.alert-${type}-item-data`).forEach((el) => {
         el.innerHTML = '';
     })
+}
+
+/**
+ * Crea un string formateado para un archivo .csv que se va a descargar
+ * @param {Object} headers un objeto que vincula el nombre en español de los datos deseados y el nombre de la propiedad de Item correspondiente
+ * @param {Array} items array de los ítems que se desean incluir en el archivo
+ * @returns un string formateado para csv
+ */
+export function getCSVString(headers, items) {
+    let csvString = '';
+
+    let headerArray = [];
+    for (const header in headers) {
+        headerArray.push(header);
+    }
+
+    csvString += headerArray.join(',') + '\n';
+
+    items.forEach((item) => {
+        let itemDataArray = [];
+        for (const header in headers) {
+            itemDataArray.push(item[headers[header]]);
+        }
+
+        csvString += itemDataArray.join(',') + '\n';
+    })
+
+    return csvString;
+}
+
+/**
+ * Genera un código al azar de un largo determinado y chequea que sea único.
+ * @param {int} length largo del código deseado
+ * @param {*} stock stock actual para chequear los códigos actuales
+ * @returns string con el código único.
+ */
+export function getUniqueCode(length, stock) {
+    let codes = [];
+    stock.items.forEach((item) => {
+        codes.push(item.itemCode);
+    });
+
+    let code = Math.random().toString(36).slice(2, length + 2);
+
+    if (codes.includes(code)){
+        return getUniqueCode(length, stock);
+    } else {
+        return code;
+    }
 }
