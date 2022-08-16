@@ -1,5 +1,5 @@
 import QuantityDiv from '../customElements/QuantityDiv.js';
-import { showPage } from '../funciones.js';
+import { showPage, updateStockNames } from '../funciones.js';
 import Item from './Item.js'
 
 !customElements.get('quantity-div')? customElements.define('quantity-div', QuantityDiv): 1;
@@ -106,8 +106,11 @@ export default class Stock {
         stockTableHead.append(tableRow);
         
         let tableData, deleteButton, editButton, quantityDiv;
+        let stockNames = [];
 
         this.items.forEach((item) => {
+            !stockNames.includes(item.stockName) && stockNames.push(item.stockName);
+
             tableRow = document.createElement('tr');
             tableRow.className = 'stock-item-row';
             tableRow.id = `stock-item-${item.code}-row`;
@@ -163,6 +166,7 @@ export default class Stock {
             })
             stockTableBody.append(tableRow);
         })
+        updateStockNames(stockNames);
     }
     saveStockInStorage() {
         sessionStorage.setItem('stock', JSON.stringify(this.items))

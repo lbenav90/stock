@@ -14,7 +14,7 @@ export default class Item {
         this.minQuantity = minQuantity || 1;
         this.presentation = presentation;
         this.description = description;
-        this.stockName = stockName;
+        this.stockName = stockName || 'main';
         this.code = code;
     }
     increaseStock(){
@@ -50,6 +50,9 @@ export default class Item {
         let itemDescription = document.createElement ('p');
         itemDescription.innerText = (this.description === '')? 'Descripción: None' : `Descripción: ${this.description}`;
 
+        let itemStockName = document.createElement('p');
+        itemStockName.innerText = `Stock: ${this.stockName}`;
+
         let editButton = document.createElement('button');
         editButton.className = 'btn btn-outline-secondary';
         editButton.innerText = 'Editar';
@@ -71,7 +74,7 @@ export default class Item {
 
         let dataDiv = document.createElement('div');
         dataDiv.className = 'item-data-div'
-        dataDiv.append(itemName, itemBrand, itemQuantity, itemMinQuantity, itemPresentation, itemDescription);
+        dataDiv.append(itemName, itemBrand, itemQuantity, itemMinQuantity, itemPresentation, itemDescription, itemStockName);
 
         let butDiv = document.createElement('div');
         butDiv.className = 'item-but-div';
@@ -94,6 +97,7 @@ export default class Item {
             newForm.minQuantity = this.minQuantity;
             newForm.presentation = this.presentation;
             newForm.description = this.description;
+            newForm.stockName = this.stockName;
 
             newForm.addEventListener('submit', (event) => {
                 event.preventDefault();
@@ -119,6 +123,20 @@ export default class Item {
 
             document.querySelector('#change-item-div').append(newForm);
 
+            document.querySelector('#item-stockName').value = this.stockName;
+            document.querySelector('#item-stockNameInput-row').style.display = 'none';
+
+            document.querySelector('#item-stockName').addEventListener('change', () => {
+                let selected = document.querySelector('#item-stockName').value;
+                
+                if (selected === 'new') { 
+                    document.querySelector('#item-stockNameInput-row').style.display = 'table-row';
+                } else {
+                    document.querySelector('#item-stockNameInput-row').style.display = 'none';
+                    document.querySelector('#item-stockNameInput-row').value = '';
+                }
+            })
+
             document.querySelector('#return-but').addEventListener('click', () => {
                 showPage('stock-div');
     
@@ -131,6 +149,6 @@ export default class Item {
     changeParameters(inputs) {
         // Cambia los parámetros del ítem.
         // TODO: modificar para que sólo sea necesario poner lo que se desea cambiar.
-        [this.name, this.brand, this.quantity, this.minQuantity, this.presentation, this.description] = inputs;
+        [this.name, this.brand, this.quantity, this.minQuantity, this.presentation, this.description, this.stockName] = inputs;
     }
 }

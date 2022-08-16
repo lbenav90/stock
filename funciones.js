@@ -5,7 +5,7 @@ import Stock from './clases/Stock.js';
  * @param inputs - values entered to form
  * @returns bool - if the inputs are valid or not
  */
-export function checkValidInputs(id, name, brand, quantity, minQuantity, presentation, description, type) {
+export function checkValidInputs(id, name, brand, quantity, minQuantity, presentation, description, stockName, type) {
     if ((isNaN(quantity) || quantity <= 0) || (isNaN(minQuantity) && quantity <= 0) || name === '' || presentation === '') {
         // Chequea que ingresen nombre, presentación y una cantidad válida. 
         // Si alguno es inválido, chequea todos para poner las alertas correspondientes.
@@ -51,12 +51,23 @@ export function checkValidInputs(id, name, brand, quantity, minQuantity, present
 }
 
 /**
- * Capitalizes the first letter and makes everything else lowercase. Basic clean up. IMPROVE LATER
+ * Handles different types of string clean up.
  * @param {str} s string to clean up
+ * @param {str} type of cleanup desired. 'cap1' for capitalizing the first letter. 'capAll' for capitalizing all words
  * @returns a formatted string
  */
-export function cleanUpString(s) {
-    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+export function cleanUpString(s, type) {
+    switch (type) {
+        case 'cap1':
+            return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+        case 'capAll':
+            let words = s.split(' ');
+            let cleaned = [];
+        
+            words.forEach((word) => { cleaned.push(word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()); });
+
+            return cleaned.join(' ');          
+    }
 }
 
 /**
@@ -106,14 +117,18 @@ export function showPage(divClassShow) {
  * @returns array of cleaned and parsed inputs
  */
 export function getFormValues() {
-    let name = cleanUpString(document.querySelector('#item-name').value.trim());
-    let brand = cleanUpString(document.querySelector('#item-brand').value.trim());
+    let name = cleanUpString(document.querySelector('#item-name').value.trim(), 'capAll');
+    let brand = cleanUpString(document.querySelector('#item-brand').value.trim(), 'capAll');
     let quantity = parseInt(document.querySelector('#item-quantity').value);
     let minQuantity = parseInt(document.querySelector('#item-minQuantity').value)
-    let presentation = cleanUpString(document.querySelector('#item-presentation').value.trim());
-    let description = cleanUpString(document.querySelector('#item-description').value.trim());
+    let presentation = cleanUpString(document.querySelector('#item-presentation').value.trim(), 'capAll');
+    let description = cleanUpString(document.querySelector('#item-description').value.trim(), 'cap1');
+    let stockName = document.querySelector('#item-stockName').value;
 
-    return [name, brand, quantity, minQuantity, presentation, description];
+    // Si el usuario eligió un nuevo nombre de stock, ir a buscarlo
+    stockName = (stockName === 'new')? document.querySelector('#item-stockNameInput').value.toLowerCase(): stockName;
+
+    return [name, brand, quantity, minQuantity, presentation, description, stockName];
 }
 
 /**
@@ -178,4 +193,19 @@ export function getUniqueCode(length, stock) {
     } else {
         return code;
     }
+}
+
+/**
+ * Esta función chequea si alguno de los nombres de stockNames no está guardado en el sessionStorage. Si no lo esta, lo agrega.
+ * Esto evita que al borrar el último ítem de un stock, ese stock se borre.
+ * @param {Array} stockNames array de los nombres de los stock actualmente en los ítems
+ */
+export function updateStockNames(stockNames) {
+    let oldNames = JSON.parse(sessionStorage.getItem('stock-names'));
+
+    stockNames.forEach((name) => {
+        !oldNames.includes(name) && oldNames.push(name);
+    })
+
+    sessionStorage.setItem('stock-names', JSON.stringify(oldNames));
 }

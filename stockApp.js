@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault()
 
             emptyFormAlerts('add');
-            
+
             let inputs = getFormValues();
             
             // Si hay un input inválido, usa los elementos de alerta y finaliza la ejecución
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Defino un nuevo Item y muestro el stock
             let newItemCode = getUniqueCode(5, stock);
-            let newItem = new Item(stock.length() + 1, ...inputs, 'main', newItemCode)
+            let newItem = new Item(stock.length() + 1, ...inputs, newItemCode)
             stock.addNewItem(newItem);
             
             showPage('stock-div');
@@ -37,6 +37,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.querySelector('#add-item-div').append(newForm);
+
+        document.querySelector('#item-stockNameInput-row').style.display = 'none';
+
+        document.querySelector('#item-stockName').addEventListener('change', () => {
+            let selected = document.querySelector('#item-stockName').value;
+            
+            if (selected === 'new') { 
+                document.querySelector('#item-stockNameInput-row').style.display = 'table-row';
+            } else {
+                document.querySelector('#item-stockNameInput-row').style.display = 'none';
+                document.querySelector('#item-stockNameInput-row').value = '';
+            }
+        })
         
         // Boton para volver al stock
         document.querySelector('#return-but').addEventListener('click', () => {
