@@ -5,7 +5,8 @@ import { checkValidInputs, getFormValues, showPage, emptyFormAlerts, getCSVStrin
 
 !customElements.get('form-element')? customElements.define('form-element', FormElement): //pass
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+
     showPage('stock-div');
 
     let stock = new Stock();
@@ -38,7 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelector('#add-item-div').append(newForm);
 
-        document.querySelector('#item-stockNameInput-row').style.display = 'none';
+
+
+        /*console.log(FormElement.getForm());*/
+
+        document.querySelector('#item-stockNameInput').style.display = 'none';
 
         document.querySelector('#item-stockName').addEventListener('change', () => {
             let selected = document.querySelector('#item-stockName').value;

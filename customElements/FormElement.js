@@ -5,14 +5,14 @@ export default class FormElement extends HTMLElement {
     constructor() {
         super();
     }
-    connectedCallback() {
+    async connectedCallback() {
         // Definido así apra evitar bucles infinitos con attributeChangedCallback()
         if (!this.rendered) {
-            this.render();
+            await this.render();
             this.rendered = true;
         }
     }
-    render() {
+    async render() {
         // Método que define el elemento personalizado. El atributo 'type' define si es un formulario para agregar o modificar ítems
         let type = this.getAttribute('type') || 'add';
 
@@ -93,7 +93,14 @@ export default class FormElement extends HTMLElement {
                     case 'Stock':
                         html += `<select class="stock-input" id="item-${formRows[row]}">`
                         
-                        let stockNames = JSON.parse(sessionStorage.getItem('stock-names'));
+                        let stockNames;
+
+                        const resp = await fetch('/Coderhouse/Javascript/proyecto/stockNamesDB.json')
+                        const resp2 = await resp.json()
+                        
+                        stockNames = resp2
+
+                        console.dir(stockNames)
 
                         stockNames.forEach((name) => {
                             html += `<option value="${name}">${name}</option>`
@@ -121,6 +128,11 @@ export default class FormElement extends HTMLElement {
         this.innerHTML = html;
 
     }
+
+    static get getForm() {
+        return document.querySelector('form');
+    }
+
     static get observedAttributes() {
         // Los atributos que, cuando cambian, se agregan o de borran, llaman a attributeChangedCallback()
         return ['type', 'name', 'brand', 'quantity', 'minQuantity', 'presentation', 'description', 'stockName'];
@@ -146,8 +158,8 @@ export default class FormElement extends HTMLElement {
     set description(val) { val? this.setAttribute('description', val) : this.removeAttribute('description'); } 
     set stockName(val) { val? this.setAttribute('stockName', val) : this.removeAttribute('stockName'); }
 
-    attributeChangedCallback(name, oldValue, newValue) {
+    async attributeChangedCallback(name, oldValue, newValue) {
         // Vuelve a renderear el objeto
-        this.render();
+        await this.render();
     }
 }
