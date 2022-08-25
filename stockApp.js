@@ -5,12 +5,14 @@ import { checkValidInputs, getFormValues, showPage, emptyFormAlerts, getCSVStrin
 
 !customElements.get('form-element')? customElements.define('form-element', FormElement): //pass
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
 
     showPage('stock-div');
 
     let stock = new Stock();
     stock.displayStock();
+
+    const API_KEY = "v6GVuC2yWpZZXebdxzHmTJQmN3Vk9dc5";
 
     document.querySelector('#add-item-but').addEventListener('click', () => {
         showPage('add-item-div');
@@ -39,11 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.querySelector('#add-item-div').append(newForm);
 
-
-
-        /*console.log(FormElement.getForm());*/
-
-        document.querySelector('#item-stockNameInput').style.display = 'none';
+        document.querySelector('#item-stockNameInput-row').style.display = 'none';
 
         document.querySelector('#item-stockName').addEventListener('change', () => {
             let selected = document.querySelector('#item-stockName').value;
@@ -153,5 +151,39 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
             lowStockTableBody.append(tableRow);
         })
+    })
+
+    document.querySelector('#currency-link').addEventListener('click', () => {
+
+        let currentRate;
+
+        fetch('https://api.apilayer.com/fixer/latest?symbols=ARS&base=USD', {
+            method: 'GET',
+            redirect: 'follow',
+            headers: {
+                'apikey': API_KEY
+            }
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((result) => {
+
+            Toastify({
+                text: `Cotización actual: $${Number(result.rates.ARS).toFixed(2)} por USD`,
+                duration: 10000,
+                stopOnFocus: false,
+                position: 'right',
+                style: {
+                    height: '40px',
+                    width: '270px',
+                    background: '#b6b6b6',
+                    borderRadius: '20px',
+                    fontSize: '10pt',
+                    fontWeight: 'bold'
+                }
+            }).showToast();
+        })
+ 
     })
 })

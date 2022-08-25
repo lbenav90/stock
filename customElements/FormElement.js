@@ -93,15 +93,8 @@ export default class FormElement extends HTMLElement {
                     case 'Stock':
                         html += `<select class="stock-input" id="item-${formRows[row]}">`
                         
-                        let stockNames;
-
-                        const resp = await fetch('/Coderhouse/Javascript/proyecto/stockNamesDB.json')
-                        const resp2 = await resp.json()
+                        let stockNames = JSON.parse(sessionStorage.getItem('stock-names'));
                         
-                        stockNames = resp2
-
-                        console.dir(stockNames)
-
                         stockNames.forEach((name) => {
                             html += `<option value="${name}">${name}</option>`
                         })
@@ -109,6 +102,7 @@ export default class FormElement extends HTMLElement {
                         html += `<option value="new"><-- Nuevo --></option>`
 
                         html += `</select>`
+
                         break;
                     case 'Nombre del nuevo stock':
                         html += `<input type="text" class="stock-input" id="item-${formRows[row]}"></td>`;

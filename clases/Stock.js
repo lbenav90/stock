@@ -169,35 +169,10 @@ export default class Stock {
         updateStockNames(stockNames);
     }
     saveStockInStorage() {
-        fetch('/Coderhouse/Javascript/proyecto/stockDB.json', {
-            method: 'POST',
-            body: JSON.stringify(this.items)
-        })
-        .then((response) => { console.dir(response)})
-        //sessionStorage.setItem('stock', JSON.stringify(this.items))
+        sessionStorage.setItem('stock', JSON.stringify(this.items))
     }
     getStockFromStorage() {
-
-        fetch('/Coderhouse/Javascript/proyecto/stockDB.json')
-        .then((response) => {
-            if (response.status === 404) {
-                this.saveStockInStorage();
-            } else {
-                return response.json()
-            }
-        })
-        .then((stock) => {
-            if (!stock) { return; }
-
-            stock.forEach((item) => {
-                newItem = new Item(item.id, item.name, item.brand, parseInt(item.quantity), parseInt(item.minQuantity),
-                                   item.presentation, item.description, item.stockName, item.code);
-
-                this.items.push(newItem)
-            })
-        })
-
-        /*let savedStock = JSON.parse(sessionStorage.getItem('stock'))
+        let savedStock = JSON.parse(sessionStorage.getItem('stock'))
         let newItem;
 
         if (savedStock) {
@@ -212,7 +187,7 @@ export default class Stock {
             this.items = [];
             this.saveStockInStorage();
             sessionStorage.setItem('stock-names', JSON.stringify(['main']));
-        }*/
+        }
     }
     changeParameters(code, inputs) {
         let item = this.getItem(code);
