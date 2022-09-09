@@ -87,20 +87,49 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#order-by').addEventListener('change', () => {
         let stockVisible = document.querySelector('#stock-div').style.display === 'block';
 
-        if (stockVisible) {
-            displayStock(document.querySelector('#order-by').value);
-        } else {
-            prepLowStockOrder(document.querySelector('#order-by').value);
-        }
+        const order = document.querySelector('#order-by').value;
+
+        const tableRows = document.querySelectorAll('.stock-item-row');
+
+        const currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
+        let itemA, itemB;
+
+        let tableRowsArray = Array.prototype.slice.call(tableRows, 0);
+        console.log(tableRowsArray)
+
+        tableRowsArray.sort((a, b) => {
+            itemA = currentStock[a.id.split('-')[2]];
+            itemB = currentStock[b.id.split('-')[2]];
+
+            if (itemA[order] > itemB[order]){
+                return 1
+            } else if (itemA[order] < itemB[order]) {
+                return -1
+            }
+            return 0;
+        })
+
+        const tableBody = stockVisible? document.querySelector('#stock-table-body'): document.querySelector('#low-stock-table-body');
+        
+        while (tableBody.firstChild) {
+            tableBody.removeChild(tableBody.firstChild);
+        };
+
+        tableBody.append(...tableRowsArray);
     });
 
     document.querySelector('#search-bar').addEventListener('keyup', () => {
         const query = document.querySelector('#search-bar').value.toLowerCase();
         const tableRows = document.querySelectorAll('.stock-item-row');
-        let tableData, searchHit;
+        let tableData, searchHit, item;
+
+        let currentCategory = document.querySelector(`#category-select`).value;
+        let currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
 
         tableRows.forEach((row) => {
             searchHit = false;
+
+            item = currentStock[row.id.split('-')[2]];
 
             tableData = row.querySelectorAll('td');
             tableData.forEach((cell) => {
@@ -109,7 +138,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            row.style.display = searchHit? 'table-row': 'none';
+            if (currentCategory === 'all') {
+                row.style.display = searchHit? 'table-row' : 'none';
+            } else {
+                row.style.display = (searchHit && currentCategory === item.category)? 'table-row' : 'none';
+            }
         })
         
     })

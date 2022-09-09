@@ -10,7 +10,7 @@ import { getDatabase, ref, set, remove, get } from "https://www.gstatic.com/fire
  * @returns bool - if the inputs are valid or not
  */
 export function checkValidInputs(code, name, brand, quantity, minQuantity, presentation, description, category, type) {
-    if ((isNaN(quantity) || quantity <= 0) || (isNaN(minQuantity) && quantity <= 0) || name === '' || presentation === '' || category === '') {
+    if ((isNaN(quantity) || quantity <= 0) || (isNaN(minQuantity) && quantity <= 0) || name === '' || category === '') {
         // Chequea que ingresen nombre, presentación y una cantidad válida. 
         // Si alguno es inválido, chequea todos para poner las alertas correspondientes.
         if (name === '') {
@@ -24,10 +24,6 @@ export function checkValidInputs(code, name, brand, quantity, minQuantity, prese
         if (isNaN(minQuantity) || minQuantity <= 0) {
             document.querySelector(`#alerting-element-${type}`).innerText += 'Cantidad mínima inválida\n';
             document.querySelector(`#alert-minQuantity-data`).innerText += '*';
-        }
-        if (presentation === '') {
-            document.querySelector(`#alerting-element-${type}`).innerText += 'Ingresar una presentación\n';
-            document.querySelector(`#alert-presentation-data`).innerText += '*';
         }
         if (category === '') {
             document.querySelector(`#alerting-element-${type}`).innerText += 'Ingresar una categoría\n';
@@ -272,17 +268,9 @@ export async function displayStock(order = 'name') {
     let tableData, deleteButton, editButton, quantityDiv;
     let categories = [];
 
-    let orderedItems = Object.values(currentStock);
-    orderedItems.sort((a, b) => {
-        if (a[order] > b[order]){
-            return 1
-        } else if (a[order] < b[order]) {
-            return -1
-        }
-        return 0;
-    })
+    let items = Object.values(currentStock);
 
-    orderedItems.forEach((litItem) => {
+    items.forEach((litItem) => {
         let item = new Item(litItem.code, litItem.name, litItem.brand, litItem.quantity, 
                             litItem.minQuantity, litItem.presentation, litItem.description, litItem.category)
 
@@ -374,15 +362,33 @@ export async function displayStock(order = 'name') {
         let selected = document.querySelector('#category-select').value;
         let tableRows = document.querySelectorAll('.stock-item-row');
         let currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
+        const query = document.querySelector('#search-bar').value.toLowerCase();
+        let itemCode, itemCategory, searchHit;
         
         tableRows.forEach((row) => {
-            let itemCode = row.id.split('-')[2];
-            let itemCategory = currentStock[itemCode].category;
+            itemCode = row.id.split('-')[2];
+            itemCategory = currentStock[itemCode].category;
+            searchHit = false;
 
-            if (selected === 'all' || itemCategory === selected) {
-                row.style.display = 'table-row';
+            if (query === '') {
+                if (selected === 'all' || itemCategory === selected) {
+                    row.style.display = 'table-row';
+                } else {
+                    row.style.display = 'none';
+                }
             } else {
-                row.style.display = 'none';
+                tableData = row.querySelectorAll('td');
+                tableData.forEach((cell) => {
+                    if(cell.innerText.toLowerCase().includes(query)) {
+                        searchHit = true;
+                    }
+                });
+
+                if (searchHit && (selected === 'all' || itemCategory === selected)) {
+                    row.style.display = 'table-row';
+                } else {
+                    row.style.display = 'none';
+                }
             }
         })
     })
