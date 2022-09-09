@@ -1,4 +1,3 @@
-import Item from './clases/Item.js'
 import QuantityDiv from './customElements/QuantityDiv.js';
 import { getDatabase, ref, set, remove, get } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js";
 
@@ -214,7 +213,7 @@ export function updateCategories(categories) {
     sessionStorage.setItem('stock-categories', JSON.stringify(categories))
 }
 
-export async function displayStock(order = 'name') {
+export async function displayStock() {
     showPage('stock-div');
 
     document.querySelector('#filter-nav').style.visibility = 'hidden';
@@ -270,9 +269,7 @@ export async function displayStock(order = 'name') {
 
     let items = Object.values(currentStock);
 
-    items.forEach((litItem) => {
-        let item = new Item(litItem.code, litItem.name, litItem.brand, litItem.quantity, 
-                            litItem.minQuantity, litItem.presentation, litItem.description, litItem.category)
+    items.forEach((item) => {
 
         !categories.includes(item.category) && categories.push(item.category);
 
@@ -321,7 +318,7 @@ export async function displayStock(order = 'name') {
         editButton.id = `stock-item-${item.code}-edit-but`
         editButton.title = 'Editar'
         editButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/><path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/></svg>';
-        item.addEditButtonEventListener(editButton);
+        addEditButtonEventListener(editButton, item);
 
         tableData.append(editButton, deleteButton);
 
@@ -331,11 +328,9 @@ export async function displayStock(order = 'name') {
             showPage('show-item-div');
 
             const currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
-            const updatedLitItem = currentStock[item.code];
-            const updatedItem = new Item(updatedLitItem.code, updatedLitItem.name, updatedLitItem.brand, updatedLitItem.quantity, 
-                                         updatedLitItem.minQuantity, updatedLitItem.presentation, updatedLitItem.description, updatedLitItem.category)
+            const updatedItem = currentStock[item.code];
             
-            updatedItem.displayItem();
+            displayItem(updatedItem);
         })
         stockTableBody.append(tableRow);
     });
@@ -538,4 +533,130 @@ export async function addNewItem(item) {
     const stockDB = getDatabase();
     set(ref(stockDB, `stock/items/${item.code}`), item)
     set(ref(stockDB, 'stock/empty'), false)
+}
+
+function displayItem(item) {
+    let itemName = document.createElement('h3');
+    itemName.innerText = item.name;
+    itemName.className = 'item-inner-data';
+
+    let itemBrand = document.createElement('p');
+    itemBrand.innerText = (item.brand === '')? 'Marca: ---' : `Marca: ${item.brand}`;
+    itemBrand.className = 'item-inner-data';
+    
+    let itemQuantity = document.createElement('p');
+    itemQuantity.innerText = `Cantidad: ${item.quantity}`;
+    itemQuantity.className = 'item-inner-data';
+
+    let itemMinQuantity = document.createElement('p');
+    itemMinQuantity.innerText = `Cantidad mínima: ${item.minQuantity}`;
+    itemMinQuantity.className = 'item-inner-data';
+    
+    let itemPresentation = document.createElement('p');
+    itemPresentation.innerText = `Presentación: ${item.presentation}`;
+    itemPresentation.className = 'item-inner-data';
+
+    let itemDescription = document.createElement ('p');
+    itemDescription.innerText = (item.description === '')? 'Descripción: ---' : `Descripción: ${item.description}`;
+    itemDescription.className = 'item-inner-data';
+
+    let itemCategory = document.createElement('p');
+    itemCategory.innerText = `Categoría: ${item.category}`;
+    itemCategory.className = 'item-inner-data';
+
+    let editButton = document.createElement('button');
+    editButton.className = 'btn btn-outline-secondary';
+    editButton.innerText = 'Editar';
+    addEditButtonEventListener(editButton, item);    
+
+    let delButton = document.createElement('button');
+    delButton.className = 'btn btn-outline-secondary';
+    delButton.innerText = 'Borrar';
+    
+    delButton.addEventListener('click', () => {
+        deleteItem(item.code)
+    })
+
+    let showItemDiv = document.querySelector('#show-item-div');
+    showItemDiv.innerHTML = '';
+
+    let dataDiv = document.createElement('div');
+    dataDiv.className = 'item-data-div'
+    dataDiv.append(itemName, itemBrand, itemQuantity, itemMinQuantity, itemPresentation, itemDescription, itemCategory);
+
+    let butDiv = document.createElement('div');
+    butDiv.className = 'item-but-div';
+    butDiv.append(editButton, delButton)
+
+    showItemDiv.append(dataDiv, butDiv);
+}
+
+function addEditButtonEventListener(editButton, item) {
+    editButton.addEventListener('click', (event) => {
+        event.stopPropagation();
+
+        showPage('change-item-div');
+
+        document.querySelector('#change-item-div').innerHTML = '';
+
+        let newForm = document.createElement('form-element');
+        newForm.type = 'change';
+        newForm.name = item.name;
+        newForm.brand = item.brand;
+        newForm.quantity = item.quantity;
+        newForm.minQuantity = item.minQuantity;
+        newForm.presentation = item.presentation;
+        newForm.description = item.description;
+        newForm.category = item.category;
+
+        newForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            emptyFormAlerts('change');
+
+            let inputs = getFormValues();
+            
+            if (!checkValidInputs(item.code, ...inputs, 'change')) return;
+
+            let changedItem = {
+                code: item.code,
+                name: inputs[0],
+                brand: inputs[1],
+                quantity: inputs[2],
+                minQuantity: inputs[3],
+                presentation: inputs[4],
+                description: inputs[5],
+                category: inputs[6]
+            }
+
+            const stockDB = await getDatabase();
+            await set(ref(stockDB, `stock/items/${item.code}`), changedItem)             
+            
+            showPage('stock-div');
+
+            displayStock();
+        })
+
+        document.querySelector('#change-item-div').append(newForm);
+
+        document.querySelector('#item-category').value = item.category;
+        document.querySelector('#item-newCategory-row').style.display = 'none';
+
+        document.querySelector('#item-category').addEventListener('change', () => {
+            let selected = document.querySelector('#item-category').value;
+            
+            if (selected === 'new') { 
+                document.querySelector('#item-newCategory-row').style.display = 'table-row';
+            } else {
+                document.querySelector('#item-newCategory-row').style.display = 'none';
+                document.querySelector('#item-newCategory-row').value = '';
+            }
+        })
+
+        document.querySelector('#return-but').addEventListener('click', () => {
+            showPage('stock-div');
+
+            displayStock();
+        })
+    })    
 }

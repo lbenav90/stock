@@ -1,4 +1,3 @@
-import Item from './clases/Item.js';
 import FormElement from './customElements/FormElement.js'
 import { checkValidInputs, getFormValues, showPage, emptyFormAlerts, getUniqueCode, addNewItem, displayStock, prepLowStockOrder } from "./funciones.js";
 
@@ -28,7 +27,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const database = getDatabase(app);
 
-!customElements.get('form-element')? customElements.define('form-element', FormElement): //pass
+!customElements.get('form-element')? customElements.define('form-element', FormElement): 1;//pass
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -53,7 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Defino un nuevo Item y muestro el stock
             let newItemCode = getUniqueCode(5);
-            let newItem = new Item(newItemCode, ...inputs)
+            let newItem = {
+                code: newItemCode,
+                name: inputs[0],
+                brand: inputs[1],
+                quantity: inputs[2],
+                minQuantity: inputs[3],
+                presentation: inputs[4],
+                description: inputs[5],
+                category: inputs[6]
+            }
             addNewItem(newItem);
 
             displayStock();
@@ -79,10 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         
         // Boton para volver al stock
-        document.querySelector('#return-but').addEventListener('click', () => displayStock());
+        document.querySelector('#return-but').addEventListener('click', displayStock);
     })
 
-    document.querySelector('#show-stock-but').addEventListener('click', () => displayStock());
+    document.querySelector('#show-stock-but').addEventListener('click', displayStock);
     
     document.querySelector('#order-by').addEventListener('change', () => {
         let stockVisible = document.querySelector('#stock-div').style.display === 'block';
@@ -95,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let itemA, itemB;
 
         let tableRowsArray = Array.prototype.slice.call(tableRows, 0);
-        console.log(tableRowsArray)
 
         tableRowsArray.sort((a, b) => {
             itemA = currentStock[a.id.split('-')[2]];

@@ -1,5 +1,4 @@
-import { showPage } from '../funciones.js'
-import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js";
 
 /**
  * Esta clase define un customElement para usar en la tabla de stock
