@@ -1,5 +1,5 @@
-import Stock from '../clases/Stock.js'
 import { showPage } from '../funciones.js'
+import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js";
 
 /**
  * Esta clase define un customElement para usar en la tabla de stock
@@ -20,6 +20,7 @@ export default class QuantityDiv extends HTMLElement {
 
         let span = document.createElement('span');
         span.className = 'quantity-span';
+        span.id = `quantity-span-${itemCode}`;
         span.innerText = quantity;
 
         let butDiv = document.createElement('div');
@@ -30,160 +31,41 @@ export default class QuantityDiv extends HTMLElement {
         plus.className = 'quantity-but quantity-plus';
         plus.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16"><path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/></svg>';
         
-        plus.addEventListener('click', (event) => {
+        plus.addEventListener('click', async (event) => {
             event.stopPropagation();
 
-            let stock = new Stock();
-            stock.getStockFromStorage();
-            stock.getItem(itemCode).increaseStock();
-            quantity++;
-            
-            this.setAttribute('quantity', quantity)
-            stock.saveStockInStorage();
+            let currentQuantity = parseInt(document.querySelector(`#quantity-span-${itemCode}`).innerText);
+            document.querySelector(`#quantity-span-${itemCode}`).innerText = currentQuantity + 1;
 
-            // Cambio el event listener porque si no, muestra la información del ítem antes de editar
-            this.parentElement.parentElement.removeEventListener('click', () => {
-                showPage('show-item-div');
-                item.displayItem();
-            })
-            this.parentElement.parentElement.addEventListener('click', () => {
-                showPage('show-item-div');
-                stock.getItem(itemCode).displayItem();
-            })
+            const currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
+            currentStock[itemCode].quantity = currentQuantity + 1;
+            sessionStorage.setItem('current-stock', JSON.stringify(currentStock));
 
-            let editButton = document.querySelector(`#stock-item-${itemCode}-edit-but`)
-            editButton.removeEventListener('click', (event) => {
-                event.stopPropagation();
-
-                document.querySelector('#change-item-div').innerHTML = '';
-
-                let newForm = document.createElement('form-element');
-                newForm.type = 'change';
-                newForm.name = this.name;
-                newForm.brand = this.brand;
-                newForm.quantity = this.quantity;
-                newForm.minQuantity = this.minQuantity;
-                newForm.presentation = this.presentation;
-                newForm.description = this.description;
-
-                newForm.addEventListener('submit', (event) => {
-                    event.preventDefault();
-
-                    emptyFormAlerts('change');
-
-                    let inputs = getFormValues();
-
-                    if (!checkValidInputs(this.id, ...inputs, 'change')) return;
-
-                    let stock = new Stock();
-                    stock.getStockFromStorage();
-                    stock.changeParameters(this.id, inputs);
-                    stock.saveStockInStorage();
-                    
-                    showPage('stock-div');
-
-                    stock.displayStock();
-                })
-
-                showPage('change-item-div');
-
-
-                document.querySelector('#change-item-div').append(newForm);
-
-                document.querySelector('#return-but').addEventListener('click', () => {
-                    showPage('stock-div');
-        
-                    let stock = new Stock();
-                    stock.displayStock();
-                })
-
-            })
-
-            stock.getItem(itemCode).addEditButtonEventListener(editButton);
-
-            this.connectedCallback();
-        })
+            const stockDB = await getDatabase();
+            await set(ref(stockDB, `stock/items/${itemCode}/quantity`), currentQuantity + 1);
+        });
 
         // Boton para bajar el stock
         let minus = document.createElement('button');
         minus.className = 'quantity-but quantity-minus'
         minus.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>';
-        
-        minus.addEventListener('click', (event) => {
+
+        minus.addEventListener('click', async (event) => {
             event.stopPropagation();
 
-            let stock = new Stock();
-            stock.getStockFromStorage();
-            
-            if (stock.getItem(itemCode).decreaseStock()) {
-                quantity--;
-                stock.saveStockInStorage()
-    
-                this.setAttribute('quantity', quantity)
+            let currentQuantity = parseInt(document.querySelector(`#quantity-span-${itemCode}`).innerText);
 
-                // Cambio el event listener porque si no, muestra la información del ítem antes de editar
-                this.parentElement.parentElement.removeEventListener('click', () => {
-                    showPage('show-item-div');
-                    item.displayItem();
-                })
-                this.parentElement.parentElement.addEventListener('click', () => {
-                    showPage('show-item-div');
-                    stock.getItem(itemCode).displayItem();
-                })
+            if (currentQuantity === 0) return;
 
-                let editButton = document.querySelector(`#stock-item-${itemCode}-edit-but`)
-            editButton.removeEventListener('click', (event) => {
-                event.stopPropagation();
+            document.querySelector(`#quantity-span-${itemCode}`).innerText = currentQuantity - 1;
 
-                document.querySelector('#change-item-div').innerHTML = '';
+            const currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
+            currentStock[itemCode].quantity = currentQuantity - 1;
+            sessionStorage.setItem('current-stock', JSON.stringify(currentStock));
 
-                let newForm = document.createElement('form-element');
-                newForm.type = 'change';
-                newForm.name = this.name;
-                newForm.brand = this.brand;
-                newForm.quantity = this.quantity;
-                newForm.minQuantity = this.minQuantity;
-                newForm.presentation = this.presentation;
-                newForm.description = this.description;
-
-                newForm.addEventListener('submit', (event) => {
-                    event.preventDefault();
-
-                    emptyFormAlerts('change');
-
-                    let inputs = getFormValues();
-
-                    if (!checkValidInputs(this.id, ...inputs, 'change')) return;
-
-                    let stock = new Stock();
-                    stock.getStockFromStorage();
-                    stock.changeParameters(this.id, inputs);
-                    stock.saveStockInStorage();
-                    
-                    showPage('stock-div');
-
-                    stock.displayStock();
-                })
-
-                showPage('change-item-div');
-
-
-                document.querySelector('#change-item-div').append(newForm);
-
-                document.querySelector('#return-but').addEventListener('click', () => {
-                    showPage('stock-div');
-        
-                    let stock = new Stock();
-                    stock.displayStock();
-                })
-
-            })
-
-            stock.getItem(itemCode).addEditButtonEventListener(editButton);
-
-                this.connectedCallback();
-            };
-        })
+            const stockDB = await getDatabase();
+            await set(ref(stockDB, `stock/items/${itemCode}/quantity`), currentQuantity - 1);
+        });
 
         butDiv.append(plus, minus);
 

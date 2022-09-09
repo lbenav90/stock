@@ -47,7 +47,7 @@ body::-webkit-scrollbar-thumb {
     transition: width 200ms ease;
 }
 
-.stock-navbar-nav {
+.stock-navbar-nav{
     list-style: none;
     padding: 0;
     margin: 0;
@@ -56,13 +56,8 @@ body::-webkit-scrollbar-thumb {
     align-items: center;
 }
 
-.stock-navbar-nav > li:last-child svg {
-    height: 30px;
-    margin-inline: 12px;
-}
-
 .stock-nav-item {
-    width: 100%;   
+    width: 100%;
 }
 
 .stock-nav-item:hover {
@@ -90,7 +85,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 .stock-nav-link svg {
-    width: 1.5rem;
+    min-width: 0.5rem;
     margin: 0 0.75rem;
     fill: var(--text-primary); 
 }
@@ -125,81 +120,9 @@ body::-webkit-scrollbar-thumb {
 
 #container-div {
     padding: 1rem;
-    padding-top: 0;
 }
 
-#container-div > div:not(:first-child) {
-    margin-top: 20px;
-}
-
-#filter-nav {
-    max-width: 800px;
-    margin-inline: auto;
-    padding-block: 10px;
-    border-radius: 0 0 15px 15px;
-    background-color: #eeeeee;
-}
-
-#filter-nav input,
-#filter-nav select {
-    height: 30px;
-    border-radius: 5px;
-}
-
-#filter-form {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    justify-content: center;
-}
-
-#filter-form > div {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    align-items: center;
-}
-
-@media only screen and (max-width: 900px) {
-    #filter-nav {
-        width: fit-content;
-        padding-inline: 20px;
-    }
-
-    #filter-form > div {
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    #category-select,
-    #order-by {
-        font-size: 10pt;
-        width: 80px;
-    }
-
-    #search-bar {
-        font-size: 10px;
-        width: 130px;
-    }
-}
-
-@media only screen and (max-width: 420px) {
-    
-    
-    #filter-form {
-        flex-direction: column;
-        gap: 5px;
-    }
-    #filter-nav label {
-        font-size: 10pt;
-    }
-}
-
-#empty-stock-alert {
-    display: 'none';
-}
-
-@media only screen and (min-width: 700px){
+@media only screen and (min-width: 600px){
     .stock-navbar{
         top: 0;
         width: 3rem;
@@ -220,8 +143,8 @@ body::-webkit-scrollbar-thumb {
         animation-play-state: 'running';
     }
 
-    .stock-navbar:hover .stock-navbar-nav svg {
-        width: 1.5rem;
+    .stock-navbar:hover .navbar-nav svg{
+        min-width: 1rem;
     }
 
     #container-div {
@@ -233,7 +156,7 @@ body::-webkit-scrollbar-thumb {
     }
 }
 
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 600px) {
     .stock-navbar {
         bottom: 0;
         height: 3rem;
@@ -257,19 +180,7 @@ body::-webkit-scrollbar-thumb {
     }
 
     .stock-input {
-        width: 200px;
-    }
-
-    .stock-navbar-nav svg {
-        width: 2rem;
-    }
-
-    .change-item-data label {
-        width: 150px;
-    }
-
-    table {
-        font-size: 10pt;
+        width: 180px;
     }
 }
 
@@ -294,35 +205,11 @@ body::-webkit-scrollbar-thumb {
     background-color: #aaaaaa;
 }  
 
-@media only screen and (max-width: 700px) {
-    .stock-item-row > td:nth-child(5),
-    .stock-item-row > td:nth-child(6),
-    #stock-table-head > tr > th:nth-child(5),
-    #stock-table-head > tr > th:nth-child(6) {
-        display: none
-    }
-}
-
 #export-but {
     height: 30px;
     width: 70px;
     font-size: 10pt;
     padding: 0;
-}
-
-table {
-    table-layout: fixed;
-}
-
-.item-data {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.item-inner-data {
-    width: 350px;
-    overflow-wrap: break-word;
 }
 
 #add-item-div {
@@ -400,27 +287,9 @@ table {
     color: #eeeeee;
 }
 
-@media only screen and (max-width: 700px) {
-    .quantity-but {
-        height: 15px;
-        width: 20px;
-    }
-
-    .quantity-but svg {
-        width: 10px;
-    }
-}
-
 .quantity-span {
     padding: 5px;
     width: 50px;
-    text-align: center;
-}
-
-@media only screen and (max-width: 700px) {
-    .quantity-span {
-        width: auto;
-    }
 }
 
 .quantity-plus {

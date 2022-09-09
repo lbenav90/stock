@@ -23,26 +23,26 @@ export default class FormElement extends HTMLElement {
         let minQuantity = this.getAttribute('minQuantity') || '';
         let presentation = this.getAttribute('presentation') || '';
         let description = this.getAttribute('description') || '';
-        let category = this.getAttribute('category');
+        let stockName = this.getAttribute('stockName') || 'main';
 
         // Defino un título que va en un element h3. Sólo funciona si hay dos opciones de "type". Si no, usar switch
         let title = (type === 'add')? 'Agregar un ítem' : 'Modificar un ítem';
         
         // Objeto que me permite vincular los nombres en español con los nombres de las propiedades del Item
-        let formRows = {'Nombre':           'name', 
-                        'Marca':            'brand', 
-                        'Cantidad':         'quantity', 
-                        'Cantidad mínima':  'minQuantity',
-                        'Presentación':     'presentation', 
-                        'Descripción':      'description', 
-                        'Categoría':        'category',
-                        'Nueva categoría':  'newCategory',
-                        '':                 'control'};
+        let formRows = {'Nombre':                'name', 
+                        'Marca':                    'brand', 
+                        'Cantidad':                 'quantity', 
+                        'Cantidad mínima':          'minQuantity',
+                        'Presentación':             'presentation', 
+                        'Descripción':              'description', 
+                        'Stock':                    'stockName',
+                        'Nombre del nuevo stock':   'stockNameInput',
+                        '':                         ''};
 
         // La variable html va a juntar todo el string que genera el HTML del elemento.
         // No se usa .innerHTML aca porque no funciona, debe ser asignado de una y no utilizando +=
         let html =  `<h3 class="stock-form-title">${title}</h3><br>`;
-        html += `<form method="post" id="${type}-item-form" accept-charset="iso-8859-1"><table id="form-table"><tbody id="form-table-body">`;
+        html += `<form method="post" id="${type}-item-form"><table id="form-table"><tbody id="form-table-body">`;
 
         // Genero cada campo del formulario como una fila en la tabla.
         for (const row in formRows) {
@@ -90,21 +90,21 @@ export default class FormElement extends HTMLElement {
                     case 'Descripción':
                         html += `<textarea class="stock-input" id="item-${formRows[row]}" rows="4" cols="50">${description}</textarea></td>`;
                         break;
-                    case 'Categoría':
+                    case 'Stock':
                         html += `<select class="stock-input" id="item-${formRows[row]}">`
                         
-                        const categories = JSON.parse(sessionStorage.getItem('stock-categories')) || [];                        
-                            
-                        categories.forEach((cat) => {
-                            html += `<option value="${cat}">${cat}</option>`
+                        let stockNames = JSON.parse(sessionStorage.getItem('stock-names'));
+                        
+                        stockNames.forEach((name) => {
+                            html += `<option value="${name}">${name}</option>`
                         })
 
-                        html += `<option value="new"><-- Nueva --></option>`
+                        html += `<option value="new"><-- Nuevo --></option>`
 
                         html += `</select>`
 
                         break;
-                    case 'Nueva categoría':
+                    case 'Nombre del nuevo stock':
                         html += `<input type="text" class="stock-input" id="item-${formRows[row]}"></td>`;
                         break;
                 }
@@ -129,7 +129,7 @@ export default class FormElement extends HTMLElement {
 
     static get observedAttributes() {
         // Los atributos que, cuando cambian, se agregan o de borran, llaman a attributeChangedCallback()
-        return ['type', 'name', 'brand', 'quantity', 'minQuantity', 'presentation', 'description', 'category'];
+        return ['type', 'name', 'brand', 'quantity', 'minQuantity', 'presentation', 'description', 'stockName'];
     }
 
     // Funciones SET y GET para todos los atributos.
@@ -142,7 +142,7 @@ export default class FormElement extends HTMLElement {
     get minQuantity() { return this.hasAttribute('minQuantity'); }
     get presentation() { return this.hasAttribute('presentation'); }
     get description() { return this.hasAttribute('description'); }
-    get category() {return this.hasAttribute('category')};
+    get stockName() {return this.hasAttribute('stockName')};
     
     set name(val) { val? this.setAttribute('name', val) : this.removeAttribute('name'); } 
     set brand(val) { val? this.setAttribute('brand', val) : this.removeAttribute('brand'); } 
@@ -150,7 +150,7 @@ export default class FormElement extends HTMLElement {
     set minQuantity(val) { val? this.setAttribute('minQuantity', val) : this.removeAttribute('minQuantity'); } 
     set presentation(val) { val? this.setAttribute('presentation', val) : this.removeAttribute('presentation'); } 
     set description(val) { val? this.setAttribute('description', val) : this.removeAttribute('description'); } 
-    set category(val) { val? this.setAttribute('category', val) : this.removeAttribute('category'); }
+    set stockName(val) { val? this.setAttribute('stockName', val) : this.removeAttribute('stockName'); }
 
     attributeChangedCallback(name, oldValue, newValue) {
         // Vuelve a renderear el objeto
