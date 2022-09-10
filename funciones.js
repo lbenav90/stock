@@ -10,7 +10,7 @@ import { getDatabase, ref, set, remove, get } from "https://www.gstatic.com/fire
  */
 export function checkValidInputs(code, name, brand, quantity, minQuantity, presentation, description, category, type) {
     if ((isNaN(quantity) || quantity <= 0) || (isNaN(minQuantity) && quantity <= 0) || name === '' || category === '') {
-        // Chequea que ingresen nombre, presentación y una cantidad válida. 
+        // Chequea que ingresen nombre, categoría y una cantidad válida. 
         // Si alguno es inválido, chequea todos para poner las alertas correspondientes.
         if (name === '') {
             document.querySelector(`#alerting-element-${type}`).innerText += 'Ingresar un nombre\n';
@@ -83,11 +83,10 @@ export function showPage(divClassShow) {
     let divClasses = ['stock-div', 'add-item-div', 'show-item-div', 'change-item-div', 'low-stock-div'];
     let div;
 
+    // Vacío la barra de búsqueda
     document.querySelector('#search-bar').value = '';
 
-    if (!divClasses.includes(divClassShow)) {
-        return false;
-    }
+    if (!divClasses.includes(divClassShow)) { return false; }
 
     if (['stock-div', 'low-stock-div'].includes(divClassShow)) {
         document.querySelector('#filter-nav').style.display = 'block';
@@ -121,7 +120,6 @@ export function showPage(divClassShow) {
     })
 
     return true;
-
 }
 
 /**
@@ -136,7 +134,7 @@ export function getFormValues() {
     let minQuantity = parseInt(document.querySelector('#item-minQuantity').value)
     let presentation = cleanUpString(document.querySelector('#item-presentation').value.trim(), 'capAll');
     let description = cleanUpString(document.querySelector('#item-description').value.trim(), 'cap1');
-    let category = document.querySelector('#item-category').value;
+    let category = cleanUpString(document.querySelector('#item-category').value, 'cap1');
 
     // Si el usuario eligió un nuevo nombre de stock, ir a buscarlo
     category = (category === 'new')? document.querySelector('#item-newCategory').value.toLowerCase(): category;
@@ -145,7 +143,7 @@ export function getFormValues() {
 }
 
 /**
- * empties the table fields used to alert the user to invalid inputs
+ * Empties the table fields used to alert the user to invalid inputs
  * @param {str} type 'add' or 'change' - form version
  */
 export function emptyFormAlerts(type) {
@@ -205,18 +203,14 @@ export function getUniqueCode(length) {
 }
 
 /**
- * Esta función chequea si alguno de los nombres de stockNames no está guardado en el sessionStorage. Si no lo esta, lo agrega.
- * Esto evita que al borrar el último ítem de un stock, ese stock se borre.
- * @param {Array} stockNames array de los nombres de los stock actualmente en los ítems
+ * Función que pide los datos de stock a la base de datos y los muestra en una tabla, con todas las funcionalidades agregadas.
  */
-export function updateCategories(categories) {
-    sessionStorage.setItem('stock-categories', JSON.stringify(categories))
-}
-
 export async function displayStock() {
     showPage('stock-div');
 
+    // Mientras carga, esconder el filter nav
     document.querySelector('#filter-nav').style.visibility = 'hidden';
+
     // Borro lo que hay en la tabla anterior
     let stockTableHead = document.getElementById('stock-table-head');
     stockTableHead.innerHTML = '';
@@ -226,6 +220,7 @@ export async function displayStock() {
 
     document.querySelector('#empty-stock-alert').style.display = 'none';
 
+    // Chequear si la base de datos esta vacía
     const stockDB = await getDatabase();
     const stockStatusRef = await ref(stockDB, 'stock/empty');
     const stockStatus = await get(stockStatusRef);
@@ -235,10 +230,12 @@ export async function displayStock() {
         return; 
     } 
     
+    // Si no está vacía, busca los datos
     const stockDBRef = await ref(stockDB, 'stock/items')
     const currentStockSnapshot = await get(stockDBRef)
     const currentStock = currentStockSnapshot.val();
 
+    // Guardo el stock actual para evitar pedidos a la base de datos
     sessionStorage.setItem('current-stock', JSON.stringify(currentStock))
 
     let tableRow = document.createElement('tr');
@@ -271,6 +268,7 @@ export async function displayStock() {
 
     items.forEach((item) => {
 
+        // Guardo las categorías de los ítems para facil acceso
         !categories.includes(item.category) && categories.push(item.category);
 
         tableRow = document.createElement('tr');
@@ -284,9 +282,10 @@ export async function displayStock() {
             tableData.className = 'item-data';
 
             if (property === 'quantity') {
+                // La cantidad la agrego con un customElement que contiene botones para cambiar el valor
                 quantityDiv = document.createElement('quantity-div');
                 quantityDiv.quantity = item.quantity;
-                quantityDiv.itemCode = item.code
+                quantityDiv.itemCode = item.code;
 
                 tableData.append(quantityDiv);
             } else if (item[property] == '') {
@@ -301,6 +300,7 @@ export async function displayStock() {
         tableData = document.createElement('td');
         tableData.className = 'item-data';
 
+        // Botón para borrar ítem
         deleteButton = document.createElement('button');
         deleteButton.className = 'stock-table-but';
         deleteButton.id = `stock-item-${item.code}-del-but`
@@ -313,6 +313,7 @@ export async function displayStock() {
             await deleteItem(item.code);
         })
 
+        // Botón para editar ítem
         editButton = document.createElement('button');
         editButton.className = 'stock-table-but';
         editButton.id = `stock-item-${item.code}-edit-but`
@@ -325,6 +326,7 @@ export async function displayStock() {
         tableRow.append(tableData);
 
         tableRow.addEventListener('click', () => {
+            // Hacer click en la fila te lleva a la información del ítem
             showPage('show-item-div');
 
             const currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
@@ -335,7 +337,10 @@ export async function displayStock() {
         stockTableBody.append(tableRow);
     });
 
-    updateCategories(categories);
+    // Guardo las categorías para fácil acceso
+    sessionStorage.setItem('stock-categories', JSON.stringify(categories));
+
+    // Agrego las categorías al menu desplegable del filter-nav, junto con una opción de 'Todos'
     let categorySelect = document.querySelector('#category-select');
     categorySelect.innerHTML = '';
 
@@ -354,10 +359,15 @@ export async function displayStock() {
     })
 
     categorySelect.addEventListener('change', () => {
+        // Al cambiar la opción del menú desplegable, filtra los ítems.
         let selected = document.querySelector('#category-select').value;
+
         let tableRows = document.querySelectorAll('.stock-item-row');
         let currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
+
+        // También aplica lo que se encuentra en la barra de búsqueda, para que trabajen en conjunto
         const query = document.querySelector('#search-bar').value.toLowerCase();
+
         let itemCode, itemCategory, searchHit;
         
         tableRows.forEach((row) => {
@@ -366,12 +376,14 @@ export async function displayStock() {
             searchHit = false;
 
             if (query === '') {
+                // Si no hay nada en la barra de búsqueda, filtro por la opcion elegida
                 if (selected === 'all' || itemCategory === selected) {
                     row.style.display = 'table-row';
                 } else {
                     row.style.display = 'none';
                 }
             } else {
+                // Si hay una búsqueda, aplica el mismo protocolo de búsqueda, acoplándolo con la elección de categoría
                 tableData = row.querySelectorAll('td');
                 tableData.forEach((cell) => {
                     if(cell.innerText.toLowerCase().includes(query)) {
@@ -388,10 +400,14 @@ export async function displayStock() {
         })
     })
 
+    // Vuelvo a mostrar el filter-nav
     document.querySelector('#filter-nav').style.visibility = 'visible';
 }
 
-export function prepLowStockOrder(order = 'name') {
+/**
+ * Revisa cada ítem y prepara una tabla con los ítems con cantidades menores a su cantidad mínima, para realizar un pedido de reposición.
+ */
+export function prepLowStockOrder() {
     showPage('low-stock-div');
 
     const currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
@@ -399,6 +415,7 @@ export function prepLowStockOrder(order = 'name') {
     let lowStockItems = [];
     let item;
 
+    // Agrego los ítems cuya cantidad sea menor igual a la cantidad mínima indicada
     for (const itemCode in currentStock) {
         item = currentStock[itemCode];
 
@@ -414,6 +431,7 @@ export function prepLowStockOrder(order = 'name') {
         document.querySelector('#no-low-stock-alert').style.display = 'none';        
     };
 
+    // Lo ordeno según la elección del filter-nav
     let orderBy = document.querySelector('#order-by').value;
     lowStockItems.sort((a,b) => {
         if (a[orderBy] > b[orderBy]){
@@ -446,13 +464,17 @@ export function prepLowStockOrder(order = 'name') {
         tableRow.append(tableHeader);
     };
 
+    // Botón para exportar un archivo CSV con la tabla de bajo stock
     let exportBut = document.createElement('button');
     exportBut.className = 'btn btn-outline-secondary';
     exportBut.id = 'export-but';
     exportBut.innerText = 'Exportar';
+
     exportBut.addEventListener('click', () => {
         let csvString = getCSVString(lowStockTableHeaders, lowStockItems);
 
+        // El caracter especial \ufeff es un caracter mágico que soluciona problemas, no se como ni porque.
+        // Recomiendo usarlo para solucionar tus problemas amorosos
         let csvFile = new Blob(["\ufeff", csvString], {
             type: 'csv',
             name: 'pedido.csv'
@@ -478,7 +500,6 @@ export function prepLowStockOrder(order = 'name') {
             tableData = document.createElement('td');
             tableData.className = 'item-data';
 
-            // Para campos no obligatorios, poner "---" si no se ingresaron datos
             tableData.innerText = (item[property] === '')? '---' : item[property];
 
             tableRow.append(tableData);
@@ -487,10 +508,16 @@ export function prepLowStockOrder(order = 'name') {
     })
 }
 
+/**
+ * Pide confirmación y frente a ella, borra el ítem indicado
+ * @param {*} code Código único del ítem a ser borrado
+ */
 export async function deleteItem(code) {
+    // Obtengo la información del ítem a borrar del storage
     const currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
     const delItem = currentStock[code];
 
+    // Pido confirmación de borrar el ítem
     swal({
         title: '¿Desea borrar el siguiente ítem?\n ',
         text: `${delItem.name} - ${delItem.brand}`,
@@ -501,16 +528,18 @@ export async function deleteItem(code) {
         }
     }).then(async (response) => {
         if (response) {
-    
+            // Borro el ítem con la confirmación
             const stockDB = await getDatabase();
             await remove(ref(stockDB, `stock/items/${code}`))
             
+            // Si la base de datos queda vacía, actualizo ese valor
             if (Object.keys(JSON.parse(sessionStorage.getItem('current-stock'))).length === 1) {
                 await set(ref(stockDB, 'stock/empty'), true)
             }
             
             await displayStock();
 
+            // Muestro la confirmación del borrado con un alerta
             Toastify({
                 text: 'Ítem borrado',
                 duration: 2000,
@@ -529,12 +558,20 @@ export async function deleteItem(code) {
     })
 }
 
+/**
+ * Agrega un nuevo ítem a la base de datos
+ * @param {*} item Objeto que contiene la información del ítem.
+ */
 export async function addNewItem(item) { 
     const stockDB = getDatabase();
     set(ref(stockDB, `stock/items/${item.code}`), item)
     set(ref(stockDB, 'stock/empty'), false)
 }
 
+/**
+ * Muestra la información de un ítem en una página individual. Es el resultado de hacer click sobre una fila de la tabla de stock
+ * @param {*} item objeto con la información del ítem
+ */
 function displayItem(item) {
     let itemName = document.createElement('h3');
     itemName.innerText = item.name;
@@ -591,6 +628,11 @@ function displayItem(item) {
     showItemDiv.append(dataDiv, butDiv);
 }
 
+/**
+ * Agrega el evento de click sobre le botón editar. Como se usa más de una vez, tiene us propia función.
+ * @param {*} editButton Botón creado para editar
+ * @param {*} item Objeto que contiene la información del ítem.
+ */
 function addEditButtonEventListener(editButton, item) {
     editButton.addEventListener('click', (event) => {
         event.stopPropagation();
@@ -653,10 +695,6 @@ function addEditButtonEventListener(editButton, item) {
             }
         })
 
-        document.querySelector('#return-but').addEventListener('click', () => {
-            showPage('stock-div');
-
-            displayStock();
-        })
+        document.querySelector('#return-but').addEventListener('click', displayStock)
     })    
 }

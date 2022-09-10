@@ -6,7 +6,7 @@ export default class FormElement extends HTMLElement {
         super();
     }
     connectedCallback() {
-        // Definido así apra evitar bucles infinitos con attributeChangedCallback()
+        // Definido así para evitar bucles infinitos con attributeChangedCallback()
         if (!this.rendered) {
             this.render();
             this.rendered = true;
@@ -93,6 +93,7 @@ export default class FormElement extends HTMLElement {
                     case 'Categoría':
                         html += `<select class="stock-input" id="item-${formRows[row]}">`
                         
+                        // Este elemento se actualiza al mostrar el stock total
                         const categories = JSON.parse(sessionStorage.getItem('stock-categories')) || [];                        
                             
                         categories.forEach((cat) => {
@@ -109,7 +110,6 @@ export default class FormElement extends HTMLElement {
                         break;
                 }
 
-
                 html += `<td class="alert-${type}-item-data" id="alert-${formRows[row]}-data"></td>`
             }
             html += '</tr>';
@@ -120,7 +120,6 @@ export default class FormElement extends HTMLElement {
 
         // Asigno el string con el HTML de una.
         this.innerHTML = html;
-
     }
 
     static get getForm() {

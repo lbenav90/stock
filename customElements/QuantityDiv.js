@@ -33,13 +33,16 @@ export default class QuantityDiv extends HTMLElement {
         plus.addEventListener('click', async (event) => {
             event.stopPropagation();
 
+            // Obtengo la canidad actual y la aumento en 1
             let currentQuantity = parseInt(document.querySelector(`#quantity-span-${itemCode}`).innerText);
             document.querySelector(`#quantity-span-${itemCode}`).innerText = currentQuantity + 1;
 
+            // Actualizo el stock actual en el sessionStorage
             const currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
             currentStock[itemCode].quantity = currentQuantity + 1;
             sessionStorage.setItem('current-stock', JSON.stringify(currentStock));
 
+            // Actualizo únicamente la cantidad de ese ítem. Esto me evita modificar todo el ítem
             const stockDB = await getDatabase();
             await set(ref(stockDB, `stock/items/${itemCode}/quantity`), currentQuantity + 1);
         });
@@ -52,6 +55,7 @@ export default class QuantityDiv extends HTMLElement {
         minus.addEventListener('click', async (event) => {
             event.stopPropagation();
 
+            // Mismo procedimiento pero no permite bajar de 0 la cantidad
             let currentQuantity = parseInt(document.querySelector(`#quantity-span-${itemCode}`).innerText);
 
             if (currentQuantity === 0) return;

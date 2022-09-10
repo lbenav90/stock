@@ -1,15 +1,11 @@
 import FormElement from './customElements/FormElement.js'
 import { checkValidInputs, getFormValues, showPage, emptyFormAlerts, getUniqueCode, addNewItem, displayStock, prepLowStockOrder } from "./funciones.js";
 
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-analytics.js";
 import { getDatabase } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
 const firebaseConfig = {
   apiKey: "AIzaSyDh61PbaLfVPrNsFgbiMWuN2IgZhPhSpKs",
   authDomain: "stock-ce94d.firebaseapp.com",
@@ -33,26 +29,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     displayStock();
 
+    // Clave para la API de cotización
     const API_KEY = "v6GVuC2yWpZZXebdxzHmTJQmN3Vk9dc5";
 
     document.querySelector('#add-item-but').addEventListener('click', () => {
         showPage('add-item-div');
 
         // Creo un formulario en modo 'add' con un customElement
-        let newForm = document.createElement('form-element');
+        const newForm = document.createElement('form-element');
         
         newForm.addEventListener('submit', async (event) => {
             event.preventDefault()
 
             emptyFormAlerts('add');
 
-            let inputs = getFormValues();
+            const inputs = getFormValues();
 
             if (!checkValidInputs(-1, ...inputs, 'add')) return;
 
-            // Defino un nuevo Item y muestro el stock
-            let newItemCode = getUniqueCode(5);
-            let newItem = {
+            // Defino un nuevo item y muestro el stock
+            const newItemCode = getUniqueCode(5);
+            const newItem = {
                 code: newItemCode,
                 name: inputs[0],
                 brand: inputs[1],
@@ -71,12 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const categoryOptions = document.querySelector('#item-category').children.length;
 
-        if (categoryOptions != 1) {
-            document.querySelector('#item-newCategory-row').style.display = 'none';
-        }
+        // Si hay al menos una categoría agregada, esconder el input de nueva categoría
+        categoryOptions != 1 && (document.querySelector('#item-newCategory-row').style.display = 'none');
 
         document.querySelector('#item-category').addEventListener('change', () => {
-            let selected = document.querySelector('#item-category').value;
+            // Si el usuario elige la opción de nueva categoría, mostrar el input escondido
+            const selected = document.querySelector('#item-category').value;
             
             if (selected === 'new') { 
                 document.querySelector('#item-newCategory-row').style.display = 'table-row';
@@ -86,24 +83,25 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         })
         
-        // Boton para volver al stock
+        // Botón para volver al stock
         document.querySelector('#return-but').addEventListener('click', displayStock);
     })
 
+    // Botón para mostrar el stock actualizado
     document.querySelector('#show-stock-but').addEventListener('click', displayStock);
     
+    // Ordena el stock según la categoría seleccionada
     document.querySelector('#order-by').addEventListener('change', () => {
-        let stockVisible = document.querySelector('#stock-div').style.display === 'block';
-
+        // Obtengo el parámetro de orden y las filas de la tabla
         const order = document.querySelector('#order-by').value;
-
         const tableRows = document.querySelectorAll('.stock-item-row');
-
+        
         const currentStock = JSON.parse(sessionStorage.getItem('current-stock'));
         let itemA, itemB;
-
-        let tableRowsArray = Array.prototype.slice.call(tableRows, 0);
-
+        
+        const tableRowsArray = Array.prototype.slice.call(tableRows, 0);
+        
+        // Ordeno las filas de la tabla según el parámetro de orden
         tableRowsArray.sort((a, b) => {
             itemA = currentStock[a.id.split('-')[2]];
             itemB = currentStock[b.id.split('-')[2]];
@@ -115,16 +113,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return 0;
         })
-
+        
+        // Obtengo el cuerpo de la tabla (dependiendo de si es la tabla de stock o de bajo stock)
+        const stockVisible = document.querySelector('#stock-div').style.display === 'block';
         const tableBody = stockVisible? document.querySelector('#stock-table-body'): document.querySelector('#low-stock-table-body');
         
+        // Remuevo los nodos del cuerpo
         while (tableBody.firstChild) {
             tableBody.removeChild(tableBody.firstChild);
         };
 
+        // Agrego las filas ordenadas
         tableBody.append(...tableRowsArray);
     });
 
+    // Barra de búsqueda, sin botón de buscar
     document.querySelector('#search-bar').addEventListener('keyup', () => {
         const query = document.querySelector('#search-bar').value.toLowerCase();
         const tableRows = document.querySelectorAll('.stock-item-row');
@@ -140,11 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             tableData = row.querySelectorAll('td');
             tableData.forEach((cell) => {
-                if(cell.innerText.toLowerCase().includes(query)) {
-                    searchHit = true;
-                }
+                // Chequear en cada celda si contiene el valor buscado 'query'
+                cell.innerText.toLowerCase().includes(query) && (searchHit = true);
+
             });
 
+            // El condicional externo permite filtrar la busqueda por al categoría actualmente seleccionada automaticamente
             if (currentCategory === 'all') {
                 row.style.display = searchHit? 'table-row' : 'none';
             } else {
@@ -154,10 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
     })
     
-    document.querySelector('#prep-order-but').addEventListener('click', () => {
-        prepLowStockOrder()
-    })
+    // Muestra la tabla con los ítems con bajo stock
+    document.querySelector('#prep-order-but').addEventListener('click', prepLowStockOrder);
 
+    // Botón que muestra la cotización del dólar actual.
     document.querySelector('#currency-link').addEventListener('click', () => {
 
         fetch('https://api.apilayer.com/fixer/latest?symbols=ARS&base=USD', {
@@ -167,9 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'apikey': API_KEY
             }
         })
-        .then((response) => {
-            return response.json()
-        })
+        .then((response) => { return response.json() })
         .then((result) => {
 
             Toastify({
